@@ -209,5 +209,13 @@ namespace backend.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("{id}/enrollments")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<CourseInfoDto>>> GetUserEnrollments(string id)
+        {
+            var enrollments = await _userService.GetUserEnrollmentsAsync(id);
+            return Ok(enrollments);
+        }
     }
 } 

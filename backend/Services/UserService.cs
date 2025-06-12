@@ -18,6 +18,7 @@ namespace backend.Services
         Task<bool> DeleteUserAsync(string id);
         Task<UserDetailResponseDto?> GetCurrentUserAsync(string userId);
         Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateUserRequestDto request);
+        Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId);
     }
 
     public class UserService : IUserService
@@ -255,6 +256,26 @@ namespace backend.Services
         public async Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateUserRequestDto request)
         {
             return await UpdateUserAsync(userId, request);
+        }
+
+        public async Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Enrollments)
+                    .ThenInclude(e => e.Course)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return new List<CourseInfoDto>();
+
+            return user.Enrollments.Select(e => new CourseInfoDto
+            {
+                Id = e.Course.Id,
+                Name = e.Course.Name,
+                Description = e.Course.Description,
+                Credits = e.Course.Credits,
+                EnrollmentDate = e.EnrollmentDate
+            }).ToList();
         }
     }
 } 

@@ -156,5 +156,13 @@ namespace backend.Controllers
             var result = await _courseService.GetAvailableCoursesForStudentAsync(userId);
             return Ok(result);
         }
+
+        [HttpGet("{id}/enrollments")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<StudentInfoDto>>> GetCourseEnrollments(int id)
+        {
+            var enrollments = await _courseService.GetCourseEnrollmentsAsync(id);
+            return Ok(enrollments);
+        }
     }
 } 

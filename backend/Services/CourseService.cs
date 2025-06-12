@@ -14,6 +14,7 @@ namespace backend.Services
         Task<CourseResponseDto?> UpdateCourseAsync(int id, UpdateCourseRequestDto request);
         Task<bool> DeleteCourseAsync(int id);
         Task<List<CourseResponseDto>> GetAvailableCoursesForStudentAsync(string studentId);
+        Task<List<StudentInfoDto>> GetCourseEnrollmentsAsync(int courseId);
     }
 
     public class CourseService : ICourseService
@@ -194,6 +195,28 @@ namespace backend.Services
                     EnrolledStudentsCount = c.Enrollments.Count()
                 })
                 .ToListAsync();
+        }
+
+        public async Task<List<StudentInfoDto>> GetCourseEnrollmentsAsync(int courseId)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Enrollments)
+                    .ThenInclude(e => e.User)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+                return new List<StudentInfoDto>();
+
+            return course.Enrollments
+                .Select(e => new StudentInfoDto
+                {
+                    Id = e.User.Id,
+                    FirstName = e.User.FirstName,
+                    LastName = e.User.LastName,
+                    Email = e.User.Email ?? "",
+                    EnrollmentDate = e.EnrollmentDate
+                })
+                .ToList();
         }
     }
 } 
