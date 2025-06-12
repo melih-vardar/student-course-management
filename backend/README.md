@@ -328,6 +328,14 @@ Email: admin@admin.com
 Password: Admin123!
 ```
 
+### Student Hesabı:
+```
+Email: student@student.com
+Password: Student123!
+```
+
+> Yeni bir hesap oluşturduğunuzda, sistem tarafından otomatik olarak Student rolü atanır. Güvenlik nedeniyle doğrudan admin hesabı oluşturmak mümkün değildir. Admin yetkisi vermek için mevcut admin hesabı ile giriş yaparak bir kullanıcıya admin rolü atayabilirsiniz.
+
 ## 📊 API Response Formatları
 
 ### Başarılı Response:
@@ -432,7 +440,6 @@ JOIN "Courses" c ON e."CourseId" = c."Id";
 
 ## 🎯 Proje Özellikleri
 
-### ✅ **Teknik Mülakat İçin Optimize Edilmiş:**
 - 🎯 **Tek Port**: `http://localhost:5268` - Frontend için net URL
 - 📝 **Tek Konfigürasyon**: `appsettings.json` - Development/Production karmaşası yok
 - 🔑 **Güvenli JWT Key**: 256-bit hex key - Production ready
@@ -440,7 +447,6 @@ JOIN "Courses" c ON e."CourseId" = c."Id";
 
 ### 🚀 **Avantajlar:**
 - 📦 **GitHub'dan Çek ve Çalıştır**: Ekstra konfigürasyon gerektirmez
-- 🎯 **Mülakat Dostu**: Anlaşılır ve basit yapı
 - 🔧 **Tek Komut**: `dotnet run` ile çalışır
 - 🌐 **Frontend Ready**: Net API URL'si
 
@@ -482,10 +488,6 @@ JOIN "Courses" c ON e."CourseId" = c."Id";
 - **Swagger** - API dokümantasyonu için
 - **ASP.NET Core Identity** - Kullanıcı yönetimi için
 
-## 📝 Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır.
-
 ## 👨‍💻 Geliştirici
 
-**Melih Vardar** - Backend Developer
+**Melih Vardar** - Fullstack Developer

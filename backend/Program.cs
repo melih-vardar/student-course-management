@@ -200,9 +200,24 @@ using (var scope = app.Services.CreateScope())
             Role = UserRole.Admin,
             EmailConfirmed = true
         };
-        
         await userManager.CreateAsync(adminUser, "Admin123!");
         await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+    // Student kullanıcı oluştur
+    if (await userManager.FindByEmailAsync("student@student.com") == null)
+    {
+        var studentUser = new User
+        {
+            UserName = "student@student.com",
+            Email = "student@student.com",
+            FirstName = "Student",
+            LastName = "Student",
+            DateOfBirth = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            Role = UserRole.Student,
+            EmailConfirmed = true
+        };
+        await userManager.CreateAsync(studentUser, "Student123!");
+        await userManager.AddToRoleAsync(studentUser, "Student");
     }
 }
 
