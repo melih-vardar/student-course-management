@@ -107,7 +107,7 @@ namespace backend.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDetailResponseDto>> UpdateUser(
             string id, 
-            [FromBody] UpdateUserRequestDto request)
+            [FromBody] AdminUpdateUserRequestDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -176,7 +176,7 @@ namespace backend.Controllers
 
         [HttpPut("profile")]
         public async Task<ActionResult<UserDetailResponseDto>> UpdateCurrentUserProfile(
-            [FromBody] UpdateUserRequestDto request)
+            [FromBody] UpdateCurrentUserRequestDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -198,7 +198,7 @@ namespace backend.Controllers
             }
 
             var result = await _userService.UpdateCurrentUserAsync(userId, request);
-            
+
             if (result == null)
             {
                 return NotFound(new ErrorResponseDto

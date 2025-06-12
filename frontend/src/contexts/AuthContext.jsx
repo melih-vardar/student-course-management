@@ -56,7 +56,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await authService.register(userData);
       if (result.success) {
-        return { success: true, message: 'Registration successful. Please login.' };
+        setUser(result.data.user);
+        setIsAuthenticated(true);
+        return { success: true, data: result.data };
       } else {
         return { success: false, message: result.message };
       }

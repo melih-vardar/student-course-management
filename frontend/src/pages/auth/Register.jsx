@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import { isValidAge, isDateInFuture, toUTCString, getCurrentDateForInput } from '../../utils/dateUtils';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import api from '../../services/api';
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,12 +48,15 @@ const Register = () => {
       const result = await registerUser(userData);
       
       if (result.success) {
+        // Automatically log in the user after successful registration
+        const { token, user } = result.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         showSuccess('Registration successful! Redirecting...');
-        
-        setTimeout(() => {
-          navigate('/student/dashboard');
-        }, 1500);
+        navigate('/student/dashboard');
       } else {
+        console.error('Registration failed:', result.message);
         if (result.errors && result.errors.length > 0) {
           result.errors.forEach(error => showError(error));
         } else {
@@ -95,8 +99,8 @@ const Register = () => {
                   {...register('firstName', {
                     required: 'First name is required',
                     minLength: {
-                      value: 2,
-                      message: 'First name must be at least 2 characters'
+                      value: 3,
+                      message: 'First name must be at least 3 characters'
                     }
                   })}
                   type="text"
@@ -120,8 +124,8 @@ const Register = () => {
                   {...register('lastName', {
                     required: 'Last name is required',
                     minLength: {
-                      value: 2,
-                      message: 'Last name must be at least 2 characters'
+                      value: 3,
+                      message: 'Last name must be at least 3 characters'
                     }
                   })}
                   type="text"

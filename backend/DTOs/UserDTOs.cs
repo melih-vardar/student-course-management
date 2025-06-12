@@ -66,6 +66,47 @@ namespace backend.DTOs
         public DateTime DateOfBirth { get; set; }
     }
 
+    public class AdminUpdateUserRequestDto
+    {
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(30)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(30)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        public string Role { get; set; } = "Student";
+    }
+
+    public class UpdateCurrentUserRequestDto
+    {
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(30)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(30)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+    }
+
     public class CourseInfoDto
     {
         public int Id { get; set; }

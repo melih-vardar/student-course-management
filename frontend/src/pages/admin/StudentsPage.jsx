@@ -19,7 +19,11 @@ const StudentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentEnrollments, setStudentEnrollments] = useState([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
   const { showSuccess, showError } = useToast();
 
   const {
@@ -135,9 +139,11 @@ const StudentsPage = () => {
       }
 
       const updateData = {
+        email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
-        dateOfBirth: toUTCString(data.dateOfBirth)
+        dateOfBirth: toUTCString(data.dateOfBirth),
+        role: data.role
       };
 
       const result = await userService.updateUser(editingStudent.id, updateData);
@@ -186,14 +192,40 @@ const StudentsPage = () => {
     setEditingStudent(student);
     setValue('firstName', student.firstName);
     setValue('lastName', student.lastName);
+    setValue('email', student.email);
+    setValue('role', student.role);
     setValue('dateOfBirth', student.dateOfBirth.split('T')[0]);
     setShowEditModal(true);
+  };
+
+  const openDetailModal = async (student) => {
+    setSelectedStudent(student);
+    setShowDetailModal(true);
+    setLoadingEnrollments(true);
+    
+    try {
+      const result = await userService.getUserEnrollments(student.id);
+      if (result.success) {
+        setStudentEnrollments(result.data || []);
+      } else {
+        setStudentEnrollments([]);
+        showError('Failed to load student enrollments');
+      }
+    } catch (error) {
+      setStudentEnrollments([]);
+      showError('Failed to load student enrollments');
+    } finally {
+      setLoadingEnrollments(false);
+    }
   };
 
   const closeModals = () => {
     setShowAddModal(false);
     setShowEditModal(false);
+    setShowDetailModal(false);
     setEditingStudent(null);
+    setSelectedStudent(null);
+    setStudentEnrollments([]);
     reset();
   };
 
@@ -273,6 +305,9 @@ const StudentsPage = () => {
                       Date of Birth
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Joined
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -297,7 +332,12 @@ const StudentsPage = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {student.firstName} {student.lastName}
+                              <button
+                                onClick={() => openDetailModal(student)}
+                                className="hover:text-blue-600 hover:underline cursor-pointer"
+                              >
+                                {student.firstName} {student.lastName}
+                              </button>
                             </div>
                             <div className="text-sm text-gray-500">
                               ID: {typeof student.id === 'string' ? student.id.slice(0, 8) + '...' : student.id}
@@ -312,6 +352,15 @@ const StudentsPage = () => {
                         <div className="text-sm text-gray-900">
                           {displayDateOnly(student.dateOfBirth)}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          student.role === 'Admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {student.role}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
@@ -424,7 +473,7 @@ const StudentsPage = () => {
                       <input
                         {...register('firstName', {
                           required: 'First name is required',
-                          minLength: { value: 2, message: 'Minimum 2 characters' }
+                          minLength: { value: 3, message: 'Minimum 3 characters' }
                         })}
                         type="text"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -437,7 +486,7 @@ const StudentsPage = () => {
                       <input
                         {...register('lastName', {
                           required: 'Last name is required',
-                          minLength: { value: 2, message: 'Minimum 2 characters' }
+                          minLength: { value: 3, message: 'Minimum 3 characters' }
                         })}
                         type="text"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -545,7 +594,7 @@ const StudentsPage = () => {
                       <input
                         {...register('firstName', {
                           required: 'First name is required',
-                          minLength: { value: 2, message: 'Minimum 2 characters' }
+                          minLength: { value: 3, message: 'Minimum 3 characters' }
                         })}
                         type="text"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -558,7 +607,7 @@ const StudentsPage = () => {
                       <input
                         {...register('lastName', {
                           required: 'Last name is required',
-                          minLength: { value: 2, message: 'Minimum 2 characters' }
+                          minLength: { value: 3, message: 'Minimum 3 characters' }
                         })}
                         type="text"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -570,12 +619,31 @@ const StudentsPage = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Email</label>
                     <input
+                      {...register('email', {
+                        required: 'Email is required',
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Invalid email address'
+                        }
+                      })}
                       type="email"
-                      value={editingStudent.email}
-                      disabled
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500 sm:text-sm cursor-not-allowed"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     />
-                    <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                    {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <select
+                      {...register('role', {
+                        required: 'Role is required'
+                      })}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    >
+                      <option value="Student">Student</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                    {errors.role && <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>}
                   </div>
                   
                   <div>
@@ -619,6 +687,126 @@ const StudentsPage = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Öğrenci Detay Modal */}
+        {showDetailModal && selectedStudent && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Student Details</h3>
+                  <button
+                    onClick={closeModals}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* Student Information */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Personal Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                        <p className="mt-1 text-sm text-gray-900">{selectedStudent.firstName} {selectedStudent.lastName}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Email</label>
+                        <p className="mt-1 text-sm text-gray-900">{selectedStudent.email}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                        <p className="mt-1 text-sm text-gray-900">{displayDateOnly(selectedStudent.dateOfBirth)}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Joined Date</label>
+                        <p className="mt-1 text-sm text-gray-900">{displayDate(selectedStudent.createdAt, 'dd/MM/yyyy')}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Role</label>
+                        <span className={`mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          selectedStudent.role === 'Admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {selectedStudent.role}
+                        </span>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Student ID</label>
+                        <p className="mt-1 text-sm text-gray-900 font-mono">
+                          {typeof selectedStudent.id === 'string' ? selectedStudent.id : selectedStudent.id}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Status</label>
+                        <span className="mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          Active
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enrolled Courses */}
+                  <div>
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Enrolled Courses</h4>
+                    {loadingEnrollments ? (
+                      <div className="flex items-center justify-center py-4">
+                        <LoadingSpinner size="sm" text="Loading enrollments..." />
+                      </div>
+                    ) : studentEnrollments.length > 0 ? (
+                      <div className="space-y-3">
+                        {studentEnrollments.map((course) => (
+                          <div key={course.id} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="text-sm font-medium text-gray-900">{course.name}</h5>
+                                <p className="text-sm text-gray-500">{course.description}</p>
+                                <div className="mt-2 flex items-center space-x-4">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {course.credits} Credits
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Enrolled: {displayDate(course.enrollmentDate, 'dd/MM/yyyy')}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                  Active
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 bg-gray-50 rounded-lg">
+                        <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <p className="mt-2 text-sm text-gray-500">No course enrollments found</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 mt-6 border-t border-gray-200">
+                  <button
+                    onClick={closeModals}
+                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>

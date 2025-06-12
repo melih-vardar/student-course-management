@@ -19,7 +19,11 @@ const CoursesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseEnrollments, setCourseEnrollments] = useState([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
   const { showSuccess, showError } = useToast();
 
   const {
@@ -160,10 +164,34 @@ const CoursesPage = () => {
     setShowEditModal(true);
   };
 
+  const openDetailModal = async (course) => {
+    setSelectedCourse(course);
+    setShowDetailModal(true);
+    setLoadingEnrollments(true);
+    
+    try {
+      const result = await courseService.getCourseEnrollments(course.id);
+      if (result.success) {
+        setCourseEnrollments(result.data || []);
+      } else {
+        setCourseEnrollments([]);
+        showError('Failed to load course enrollments');
+      }
+    } catch (error) {
+      setCourseEnrollments([]);
+      showError('Failed to load course enrollments');
+    } finally {
+      setLoadingEnrollments(false);
+    }
+  };
+
   const closeModals = () => {
     setShowAddModal(false);
     setShowEditModal(false);
+    setShowDetailModal(false);
     setEditingCourse(null);
+    setSelectedCourse(null);
+    setCourseEnrollments([]);
     reset();
   };
 
@@ -234,7 +262,12 @@ const CoursesPage = () => {
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg leading-6 font-medium text-gray-900 truncate">
-                      {course.name}
+                      <button
+                        onClick={() => openDetailModal(course)}
+                        className="hover:text-blue-600 hover:underline cursor-pointer text-left"
+                      >
+                        {course.name}
+                      </button>
                     </h3>
                     <div className="flex items-center space-x-2">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -385,13 +418,12 @@ const CoursesPage = () => {
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
                       {...register('description', {
-                        required: 'Course description is required',
                         minLength: { value: 10, message: 'Minimum 10 characters' },
                         maxLength: { value: 500, message: 'Maximum 500 characters' }
                       })}
                       rows="3"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      placeholder="Describe the course content and objectives..."
+                      placeholder="Describe the course content and objectives... (optional)"
                     />
                     {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
                   </div>
@@ -403,11 +435,11 @@ const CoursesPage = () => {
                         {...register('credits', {
                           required: 'Credits is required',
                           min: { value: 1, message: 'Minimum 1 credit' },
-                          max: { value: 20, message: 'Maximum 20 credits' }
+                          max: { value: 10, message: 'Maximum 10 credits' }
                         })}
                         type="number"
                         min="1"
-                        max="20"
+                        max="10"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       />
                       {errors.credits && <p className="mt-1 text-sm text-red-600">{errors.credits.message}</p>}
@@ -479,7 +511,6 @@ const CoursesPage = () => {
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
                       {...register('description', {
-                        required: 'Course description is required',
                         minLength: { value: 10, message: 'Minimum 10 characters' },
                         maxLength: { value: 500, message: 'Maximum 500 characters' }
                       })}
@@ -496,11 +527,11 @@ const CoursesPage = () => {
                         {...register('credits', {
                           required: 'Credits is required',
                           min: { value: 1, message: 'Minimum 1 credit' },
-                          max: { value: 20, message: 'Maximum 20 credits' }
+                          max: { value: 10, message: 'Maximum 10 credits' }
                         })}
                         type="number"
                         min="1"
-                        max="20"
+                        max="10"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       />
                       {errors.credits && <p className="mt-1 text-sm text-red-600">{errors.credits.message}</p>}
@@ -531,6 +562,118 @@ const CoursesPage = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ders Detay Modal */}
+        {showDetailModal && selectedCourse && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Course Details</h3>
+                  <button
+                    onClick={closeModals}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* Course Information */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Course Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Course Name</label>
+                        <p className="mt-1 text-sm text-gray-900 font-medium">{selectedCourse.name}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">Description</label>
+                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.description || 'No description available'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Credits</label>
+                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.credits}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Enrolled Students</label>
+                        <p className="mt-1 text-sm text-gray-900">{selectedCourse.enrolledStudentsCount || 0}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Course ID</label>
+                        <p className="mt-1 text-sm text-gray-900 font-mono">#{selectedCourse.id}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Created Date</label>
+                        <p className="mt-1 text-sm text-gray-900">{displayDate(selectedCourse.createdAt, 'dd/MM/yyyy')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enrolled Students */}
+                  <div>
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Enrolled Students</h4>
+                    {loadingEnrollments ? (
+                      <div className="flex items-center justify-center py-4">
+                        <LoadingSpinner size="sm" text="Loading students..." />
+                      </div>
+                    ) : courseEnrollments.length > 0 ? (
+                      <div className="space-y-3">
+                        {courseEnrollments.map((student) => (
+                          <div key={student.id} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-8 w-8">
+                                  <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                    <span className="text-xs font-bold text-white">
+                                      {student.firstName.charAt(0)}{student.lastName.charAt(0)}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="ml-3">
+                                  <h5 className="text-sm font-medium text-gray-900">
+                                    {student.firstName} {student.lastName}
+                                  </h5>
+                                  <p className="text-sm text-gray-500">{student.email}</p>
+                                  <span className="text-xs text-gray-500">
+                                    Enrolled: {displayDate(student.enrollmentDate, 'dd/MM/yyyy')}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                  Active
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 bg-gray-50 rounded-lg">
+                        <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                        <p className="mt-2 text-sm text-gray-500">No students enrolled in this course</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 mt-6 border-t border-gray-200">
+                  <button
+                    onClick={closeModals}
+                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>

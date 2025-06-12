@@ -14,10 +14,10 @@ namespace backend.Services
         Task<PagedResponseDto<UserResponseDto>> GetAdminsAsync(int page, int pageSize);
         Task<UserDetailResponseDto?> GetUserByIdAsync(string id);
         Task<UserDetailResponseDto?> CreateUserAsync(CreateUserRequestDto request);
-        Task<UserDetailResponseDto?> UpdateUserAsync(string id, UpdateUserRequestDto request);
+        Task<UserDetailResponseDto?> UpdateUserAsync(string id, AdminUpdateUserRequestDto request);
         Task<bool> DeleteUserAsync(string id);
         Task<UserDetailResponseDto?> GetCurrentUserAsync(string userId);
-        Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateUserRequestDto request);
+        Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request);
         Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId);
     }
 
@@ -211,7 +211,7 @@ namespace backend.Services
             }
         }
 
-        public async Task<UserDetailResponseDto?> UpdateUserAsync(string id, UpdateUserRequestDto request)
+        public async Task<UserDetailResponseDto?> UpdateUserAsync(string id, AdminUpdateUserRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
@@ -220,16 +220,63 @@ namespace backend.Services
             try
             {
                 await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
+                
+                // Email değişikliği varsa unique email kontrolü
+                if (user.Email != request.Email)
+                {
+                    await _businessRuleService.ValidateUniqueEmailAsync(request.Email, id);
+                }
             }
             catch (BusinessException)
             {
                 return null;
             }
 
+            if (!Enum.TryParse<UserRole>(request.Role, out var newRole))
+            {
+                newRole = UserRole.Student;
+            }
+
+            // Email ve username güncelleme
+            if (user.Email != request.Email)
+            {
+                user.Email = request.Email;
+                user.UserName = request.Email; // Username = Email olarak ayarlanmış
+                user.NormalizedEmail = request.Email.ToUpper();
+                user.NormalizedUserName = request.Email.ToUpper();
+            }
+
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.DateOfBirth = request.DateOfBirth;
             user.UpdatedAt = DateTime.UtcNow;
+
+            // Role değişikliği varsa rol güncelleme
+            if (user.Role != newRole)
+            {
+                // Eğer Student'tan Admin'e geçiş oluyorsa, tüm enrollment'ları sil
+                if (user.Role == UserRole.Student && newRole == UserRole.Admin)
+                {
+                    var userEnrollments = await _context.Enrollments
+                        .Where(e => e.UserId == user.Id)
+                        .ToListAsync();
+                    
+                    if (userEnrollments.Any())
+                    {
+                        _context.Enrollments.RemoveRange(userEnrollments);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                var oldRoles = await _userManager.GetRolesAsync(user);
+                if (oldRoles.Any())
+                {
+                    await _userManager.RemoveFromRolesAsync(user, oldRoles);
+                }
+
+                user.Role = newRole;
+                await _userManager.AddToRoleAsync(user, newRole.ToString());
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -253,9 +300,45 @@ namespace backend.Services
             return await GetUserByIdAsync(userId);
         }
 
-        public async Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateUserRequestDto request)
+        public async Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request)
         {
-            return await UpdateUserAsync(userId, request);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return null;
+
+            try
+            {
+                await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
+                
+                // Email değişikliği varsa unique email kontrolü
+                if (user.Email != request.Email)
+                {
+                    await _businessRuleService.ValidateUniqueEmailAsync(request.Email, userId);
+                }
+            }
+            catch (BusinessException)
+            {
+                return null;
+            }
+
+            if (user.Email != request.Email)
+            {
+                user.Email = request.Email;
+                user.UserName = request.Email; // Username = Email olarak ayarlanmış
+                user.NormalizedEmail = request.Email.ToUpper();
+                user.NormalizedUserName = request.Email.ToUpper();
+            }
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.DateOfBirth = request.DateOfBirth;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return null;
+
+            return await GetUserByIdAsync(userId);
         }
 
         public async Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId)

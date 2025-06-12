@@ -36,6 +36,7 @@ const StudentProfile = () => {
         
         setValue('firstName', result.data.firstName);
         setValue('lastName', result.data.lastName);
+        setValue('email', result.data.email);
         setValue('dateOfBirth', result.data.dateOfBirth.split('T')[0]); // Convert to YYYY-MM-DD format
       } else {
         showError(result.message || 'Failed to load profile');
@@ -63,6 +64,7 @@ const StudentProfile = () => {
       }
 
       const updateData = {
+        email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
         dateOfBirth: toUTCString(data.dateOfBirth)
@@ -76,6 +78,7 @@ const StudentProfile = () => {
         
         setUserProfile(prev => ({
           ...prev,
+          email: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
           dateOfBirth: toUTCString(data.dateOfBirth)
@@ -163,7 +166,6 @@ const StudentProfile = () => {
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Email Address</dt>
                   <dd className="mt-1 text-sm text-gray-900">{userProfile?.email}</dd>
-                  <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
@@ -194,8 +196,8 @@ const StudentProfile = () => {
                       {...register('firstName', {
                         required: 'First name is required',
                         minLength: {
-                          value: 2,
-                          message: 'First name must be at least 2 characters'
+                          value: 3,
+                          message: 'First name must be at least 3 characters'
                         }
                       })}
                       type="text"
@@ -219,8 +221,8 @@ const StudentProfile = () => {
                       {...register('lastName', {
                         required: 'Last name is required',
                         minLength: {
-                          value: 2,
-                          message: 'Last name must be at least 2 characters'
+                          value: 3,
+                          message: 'Last name must be at least 3 characters'
                         }
                       })}
                       type="text"
@@ -241,12 +243,24 @@ const StudentProfile = () => {
                       Email Address
                     </label>
                     <input
+                      {...register('email', {
+                        required: 'Email is required',
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Invalid email address'
+                        }
+                      })}
                       type="email"
-                      value={userProfile?.email}
-                      disabled
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500 sm:text-sm cursor-not-allowed"
+                      className={`
+                        mt-1 block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                        focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm
+                        ${errors.email ? 'border-red-300' : 'border-gray-300'}
+                      `}
+                      placeholder="Enter your email"
                     />
-                    <p className="mt-1 text-xs text-gray-500">Email address cannot be changed</p>
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                    )}
                   </div>
 
                   <div>

@@ -105,6 +105,21 @@ export const courseService = {
         message: error.response?.data?.message || 'Failed to fetch available courses'
       };
     }
+  },
+
+  getCourseEnrollments: async (courseId) => {
+    try {
+      const response = await api.get(`/Course/${courseId}/enrollments`);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch course enrollments'
+      };
+    }
   }
 };
 
