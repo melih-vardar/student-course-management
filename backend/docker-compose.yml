@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Spring Boot'taki postgres service karşılığı
+  postgres:
+    image: postgres:15
+    container_name: studentmanagement_postgres
+    environment:
+      POSTGRES_DB: studentmanagementdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - studentmanagement_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # .NET API Service - Spring Boot'taki app service karşılığı
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studentmanagement_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=studentmanagementdb;Username=postgres;Password=postgres;Port=5432
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - studentmanagement_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  studentmanagement_network:
+    driver: bridge 
