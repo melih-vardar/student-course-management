@@ -84,7 +84,12 @@ const StudentProfile = () => {
           dateOfBirth: toUTCString(data.dateOfBirth)
         }));
       } else {
-        showError(result.message || 'Failed to update profile');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to update profile:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to update profile');
+        }
       }
     } catch (error) {
       showError('An error occurred while updating profile');

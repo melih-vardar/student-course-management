@@ -37,7 +37,7 @@ const Toast = ({ message, type = 'info', duration = 3000, onClose }) => {
     `}>
       <div className="flex items-center space-x-2">
         <span className="text-lg font-bold">{iconMap[type]}</span>
-        <p className="text-sm font-medium">{message}</p>
+        <div className="text-sm font-medium whitespace-pre-line">{message}</div>
         <button
           onClick={() => {
             setIsVisible(false);

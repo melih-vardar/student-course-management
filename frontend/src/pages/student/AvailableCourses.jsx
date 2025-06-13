@@ -99,7 +99,12 @@ const AvailableCourses = () => {
         showSuccess('Successfully enrolled in course!');
         setMyEnrollments(prev => [...prev, result.data]);
       } else {
-        showError(result.message || 'Failed to enroll in course');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to enroll in course:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to enroll in course');
+        }
       }
     } catch (error) {
       showError('Failed to enroll in course');

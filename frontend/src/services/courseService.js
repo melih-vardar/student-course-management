@@ -12,7 +12,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch courses'
+        message: error.response?.data?.message || 'Failed to fetch courses',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -27,7 +28,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch course'
+        message: error.response?.data?.message || 'Failed to fetch course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -42,7 +44,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch course info'
+        message: error.response?.data?.message || 'Failed to fetch course info',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -57,7 +60,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to create course'
+        message: error.response?.data?.message || 'Failed to create course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -72,7 +76,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to update course'
+        message: error.response?.data?.message || 'Failed to update course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -87,7 +92,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to delete course'
+        message: error.response?.data?.message || 'Failed to delete course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -102,7 +108,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch available courses'
+        message: error.response?.data?.message || 'Failed to fetch available courses',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -117,7 +124,8 @@ export const courseService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch course enrollments'
+        message: error.response?.data?.message || 'Failed to fetch course enrollments',
+        errors: error.response?.data?.errors || []
       };
     }
   }

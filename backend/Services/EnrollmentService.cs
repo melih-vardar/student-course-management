@@ -9,8 +9,8 @@ namespace backend.Services
     public interface IEnrollmentService
     {
         Task<PagedResponseDto<EnrollmentResponseDto>> GetEnrollmentsAsync(int page, int pageSize);
-        Task<EnrollmentResponseDto?> EnrollStudentAsync(string studentId, EnrollmentRequestDto request);
-        Task<EnrollmentResponseDto?> AdminEnrollStudentAsync(AdminEnrollmentRequestDto request);
+        Task<EnrollmentResponseDto> EnrollStudentAsync(string studentId, EnrollmentRequestDto request);
+        Task<EnrollmentResponseDto> AdminEnrollStudentAsync(AdminEnrollmentRequestDto request);
         Task<bool> UnenrollStudentAsync(string studentId, int courseId);
         Task<bool> AdminUnenrollStudentAsync(int enrollmentId);
         Task<List<EnrollmentResponseDto>> GetStudentEnrollmentsAsync(string studentId);
@@ -64,7 +64,7 @@ namespace backend.Services
             };
         }
 
-        public async Task<EnrollmentResponseDto?> EnrollStudentAsync(string studentId, EnrollmentRequestDto request)
+        public async Task<EnrollmentResponseDto> EnrollStudentAsync(string studentId, EnrollmentRequestDto request)
         {
             var user = await _context.Users.FindAsync(studentId);
             var course = await _context.Courses.FindAsync(request.CourseId);
@@ -113,19 +113,25 @@ namespace backend.Services
             };
         }
 
-        public async Task<EnrollmentResponseDto?> AdminEnrollStudentAsync(AdminEnrollmentRequestDto request)
+        public async Task<EnrollmentResponseDto> AdminEnrollStudentAsync(AdminEnrollmentRequestDto request)
         {
+            var user = await _context.Users.FindAsync(request.StudentId);
+            var course = await _context.Courses.FindAsync(request.CourseId);
+
+            if (user == null)
+                throw new NotFoundException("User", request.StudentId);
+            
+            if (course == null)
+                throw new NotFoundException("Course", request.CourseId);
+                
+            if (user.Role != UserRole.Student)
+                throw new BusinessException("Only students can be enrolled in courses");
+
             var existingEnrollment = await _context.Enrollments
                 .FirstOrDefaultAsync(e => e.UserId == request.StudentId && e.CourseId == request.CourseId);
 
             if (existingEnrollment != null)
-                return null;
-
-            var user = await _context.Users.FindAsync(request.StudentId);
-            var course = await _context.Courses.FindAsync(request.CourseId);
-
-            if (user == null || course == null || user.Role != UserRole.Student)
-                return null;
+                throw new BusinessException("Student is already enrolled in this course");
 
             var enrollment = new Enrollment
             {
@@ -162,7 +168,7 @@ namespace backend.Services
                 .FirstOrDefaultAsync(e => e.UserId == studentId && e.CourseId == courseId);
 
             if (enrollment == null)
-                return false;
+                throw new BusinessException("You are not enrolled in this course");
 
             _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();
@@ -173,7 +179,7 @@ namespace backend.Services
         {
             var enrollment = await _context.Enrollments.FindAsync(enrollmentId);
             if (enrollment == null)
-                return false;
+                throw new NotFoundException("Enrollment", enrollmentId);
 
             _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();

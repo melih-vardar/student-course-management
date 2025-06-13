@@ -13,11 +13,11 @@ namespace backend.Services
         Task<PagedResponseDto<UserResponseDto>> GetStudentsAsync(int page, int pageSize);
         Task<PagedResponseDto<UserResponseDto>> GetAdminsAsync(int page, int pageSize);
         Task<UserDetailResponseDto?> GetUserByIdAsync(string id);
-        Task<UserDetailResponseDto?> CreateUserAsync(CreateUserRequestDto request);
-        Task<UserDetailResponseDto?> UpdateUserAsync(string id, AdminUpdateUserRequestDto request);
+        Task<UserDetailResponseDto> CreateUserAsync(CreateUserRequestDto request);
+        Task<UserDetailResponseDto> UpdateUserAsync(string id, AdminUpdateUserRequestDto request);
         Task<bool> DeleteUserAsync(string id);
         Task<UserDetailResponseDto?> GetCurrentUserAsync(string userId);
-        Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request);
+        Task<UserDetailResponseDto> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request);
         Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId);
     }
 
@@ -169,67 +169,102 @@ namespace backend.Services
             };
         }
 
-        public async Task<UserDetailResponseDto?> CreateUserAsync(CreateUserRequestDto request)
+        public async Task<UserDetailResponseDto> CreateUserAsync(CreateUserRequestDto request)
         {
+            var errors = new List<string>();
+
+            // Business rule validations - collect all errors
             try
             {
-                // Business rule validations
                 await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
-                await _businessRuleService.ValidateUniqueEmailAsync(request.Email);
-
-                // Parse role
-                if (!Enum.TryParse<UserRole>(request.Role, out var userRole))
-                {
-                    userRole = UserRole.Student; // Default to Student
-                }
-
-                var user = new User
-                {
-                    UserName = request.Email,
-                    Email = request.Email,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    DateOfBirth = request.DateOfBirth,
-                    Role = userRole,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    EmailConfirmed = true
-                };
-
-                var result = await _userManager.CreateAsync(user, request.Password);
-                if (!result.Succeeded)
-                    return null;
-
-                // Add to role
-                await _userManager.AddToRoleAsync(user, userRole.ToString());
-
-                return await GetUserByIdAsync(user.Id);
             }
-            catch (BusinessException)
+            catch (BusinessException ex)
             {
-                return null;
+                errors.Add(ex.Message);
             }
+
+            try
+            {
+                await _businessRuleService.ValidateUniqueEmailAsync(request.Email);
+            }
+            catch (BusinessException ex)
+            {
+                errors.Add(ex.Message);
+            }
+
+            // If business rule errors exist, throw ValidationException
+            if (errors.Any())
+            {
+                throw new ValidationException(errors);
+            }
+
+            // Parse role
+            if (!Enum.TryParse<UserRole>(request.Role, out var userRole))
+            {
+                userRole = UserRole.Student; // Default to Student
+            }
+
+            var user = new User
+            {
+                UserName = request.Email,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                DateOfBirth = request.DateOfBirth,
+                Role = userRole,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                var identityErrors = result.Errors.Select(e => e.Description).ToList();
+                throw new ValidationException(identityErrors);
+            }
+
+            // Add to role
+            await _userManager.AddToRoleAsync(user, userRole.ToString());
+
+            return await GetUserByIdAsync(user.Id) ?? throw new BusinessException("Failed to retrieve created user");
         }
 
-        public async Task<UserDetailResponseDto?> UpdateUserAsync(string id, AdminUpdateUserRequestDto request)
+        public async Task<UserDetailResponseDto> UpdateUserAsync(string id, AdminUpdateUserRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return null;
+                throw new BusinessException("User not found");
 
+            var errors = new List<string>();
+
+            // Business rule validations - collect all errors
             try
             {
                 await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
-                
-                // Email değişikliği varsa unique email kontrolü
-                if (user.Email != request.Email)
+            }
+            catch (BusinessException ex)
+            {
+                errors.Add(ex.Message);
+            }
+            
+            // Email değişikliği varsa unique email kontrolü
+            if (user.Email != request.Email)
+            {
+                try
                 {
                     await _businessRuleService.ValidateUniqueEmailAsync(request.Email, id);
                 }
+                catch (BusinessException ex)
+                {
+                    errors.Add(ex.Message);
+                }
             }
-            catch (BusinessException)
+
+            // If business rule errors exist, throw ValidationException
+            if (errors.Any())
             {
-                return null;
+                throw new ValidationException(errors);
             }
 
             if (!Enum.TryParse<UserRole>(request.Role, out var newRole))
@@ -280,9 +315,12 @@ namespace backend.Services
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return null;
+            {
+                var identityErrors = result.Errors.Select(e => e.Description).ToList();
+                throw new ValidationException(identityErrors);
+            }
 
-            return await GetUserByIdAsync(id);
+            return await GetUserByIdAsync(id) ?? throw new BusinessException("Failed to retrieve updated user");
         }
 
         public async Task<bool> DeleteUserAsync(string id)
@@ -300,25 +338,41 @@ namespace backend.Services
             return await GetUserByIdAsync(userId);
         }
 
-        public async Task<UserDetailResponseDto?> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request)
+        public async Task<UserDetailResponseDto> UpdateCurrentUserAsync(string userId, UpdateCurrentUserRequestDto request)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return null;
+                throw new BusinessException("User not found");
 
+            var errors = new List<string>();
+
+            // Business rule validations - collect all errors
             try
             {
                 await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
-                
-                // Email değişikliği varsa unique email kontrolü
-                if (user.Email != request.Email)
+            }
+            catch (BusinessException ex)
+            {
+                errors.Add(ex.Message);
+            }
+            
+            // Email değişikliği varsa unique email kontrolü
+            if (user.Email != request.Email)
+            {
+                try
                 {
                     await _businessRuleService.ValidateUniqueEmailAsync(request.Email, userId);
                 }
+                catch (BusinessException ex)
+                {
+                    errors.Add(ex.Message);
+                }
             }
-            catch (BusinessException)
+
+            // If business rule errors exist, throw ValidationException
+            if (errors.Any())
             {
-                return null;
+                throw new ValidationException(errors);
             }
 
             if (user.Email != request.Email)
@@ -336,9 +390,12 @@ namespace backend.Services
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return null;
+            {
+                var identityErrors = result.Errors.Select(e => e.Description).ToList();
+                throw new ValidationException(identityErrors);
+            }
 
-            return await GetUserByIdAsync(userId);
+            return await GetUserByIdAsync(userId) ?? throw new BusinessException("Failed to retrieve updated user");
         }
 
         public async Task<List<CourseInfoDto>> GetUserEnrollmentsAsync(string userId)

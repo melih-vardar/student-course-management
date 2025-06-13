@@ -113,7 +113,12 @@ const StudentsPage = () => {
         reset();
         loadStudents();
       } else {
-        showError(result.message || 'Failed to create student');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to create student:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to create student');
+        }
       }
     } catch (error) {
       showError('Failed to create student');
@@ -155,7 +160,12 @@ const StudentsPage = () => {
         reset();
         loadStudents();
       } else {
-        showError(result.message || 'Failed to update student');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to update student:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to update student');
+        }
       }
     } catch (error) {
       showError('Failed to update student');
@@ -179,7 +189,12 @@ const StudentsPage = () => {
         showSuccess(`${studentName} deleted successfully`);
         loadStudents();
       } else {
-        showError(result.message || 'Failed to delete student');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to delete student:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to delete student');
+        }
       }
     } catch (error) {
       showError('Failed to delete student');

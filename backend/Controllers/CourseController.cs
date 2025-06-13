@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using backend.Services;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Controllers
 {
@@ -19,6 +20,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PagedResponseDto<CourseResponseDto>>> GetCourses(
             [FromQuery] int page = 1, 
             [FromQuery] int pageSize = 10)
@@ -48,6 +50,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}/info")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CourseResponseDto>> GetCourseBasicInfo(int id)
         {
             var courses = await _courseService.GetCoursesAsync(1, 1000); // Tüm dersler
@@ -80,17 +83,19 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _courseService.CreateCourseAsync(request);
-            
-            if (result == null)
+            try
+            {
+                var result = await _courseService.CreateCourseAsync(request);
+                return CreatedAtAction(nameof(GetCourseDetails), new { id = result.Id }, result);
+            }
+            catch (BusinessException ex)
             {
                 return BadRequest(new ErrorResponseDto
                 {
-                    Message = "Course creation failed. Course name might already exist."
+                    Message = "Course creation failed",
+                    Errors = new List<string> { ex.Message }
                 });
             }
-
-            return CreatedAtAction(nameof(GetCourseDetails), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
@@ -111,17 +116,19 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _courseService.UpdateCourseAsync(id, request);
-            
-            if (result == null)
+            try
             {
-                return NotFound(new ErrorResponseDto
+                var result = await _courseService.UpdateCourseAsync(id, request);
+                return Ok(result);
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
                 {
-                    Message = "Course not found or name already exists"
+                    Message = "Course update failed",
+                    Errors = new List<string> { ex.Message }
                 });
             }
-
-            return Ok(result);
         }
 
         [HttpDelete("{id}")]

@@ -9,7 +9,7 @@ namespace backend.Exceptions
             Errors = errors;
         }
 
-        public ValidationException(string error) : base("Validation failed")
+        public ValidationException(string error) : base(error)
         {
             Errors = new List<string> { error };
         }

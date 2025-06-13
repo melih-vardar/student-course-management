@@ -12,7 +12,8 @@ export const enrollmentService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch enrollments'
+        message: error.response?.data?.message || 'Failed to fetch enrollments',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -34,7 +35,8 @@ export const enrollmentService = {
       
       return {
         success: false,
-        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to enroll in course'
+        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to enroll in course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -53,7 +55,8 @@ export const enrollmentService = {
       
       return {
         success: false,
-        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to withdraw from course'
+        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to withdraw from course',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -68,7 +71,8 @@ export const enrollmentService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch enrollments'
+        message: error.response?.data?.message || 'Failed to fetch enrollments',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -91,7 +95,8 @@ export const enrollmentService = {
       
       return {
         success: false,
-        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to enroll student'
+        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to enroll student',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -110,7 +115,8 @@ export const enrollmentService = {
       
       return {
         success: false,
-        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to remove enrollment'
+        message: error.response?.data?.message || error.response?.data?.Message || 'Failed to remove enrollment',
+        errors: error.response?.data?.errors || []
       };
     }
   }

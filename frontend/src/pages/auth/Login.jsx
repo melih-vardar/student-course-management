@@ -38,7 +38,12 @@ const Login = () => {
       if (result.success) {
         showSuccess('Login successful!');
       } else {
-        showError(result.message || 'Login failed');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Login failed:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Login failed');
+        }
       }
     } catch (error) {
       console.error('Login error:', error);

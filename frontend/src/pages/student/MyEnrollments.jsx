@@ -48,7 +48,12 @@ const MyEnrollments = () => {
         showSuccess(`Successfully withdrawn from ${courseName}`);
         setEnrollments(prev => prev.filter(enrollment => enrollment.courseId !== courseId));
       } else {
-        showError(result.message || 'Failed to withdraw from course');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to withdraw from course:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to withdraw from course');
+        }
       }
     } catch (error) {
       showError('Failed to withdraw from course');

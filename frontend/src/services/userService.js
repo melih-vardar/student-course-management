@@ -12,7 +12,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch users'
+        message: error.response?.data?.message || 'Failed to fetch users',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -27,7 +28,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch user'
+        message: error.response?.data?.message || 'Failed to fetch user',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -42,7 +44,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to create user'
+        message: error.response?.data?.message || 'Failed to create user',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -57,7 +60,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to update user'
+        message: error.response?.data?.message || 'Failed to update user',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -72,7 +76,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to delete user'
+        message: error.response?.data?.message || 'Failed to delete user',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -87,7 +92,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch profile'
+        message: error.response?.data?.message || 'Failed to fetch profile',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -102,7 +108,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to update profile'
+        message: error.response?.data?.message || 'Failed to update profile',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -117,7 +124,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch students'
+        message: error.response?.data?.message || 'Failed to fetch students',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -132,7 +140,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch admins'
+        message: error.response?.data?.message || 'Failed to fetch admins',
+        errors: error.response?.data?.errors || []
       };
     }
   },
@@ -147,7 +156,8 @@ export const userService = {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch user enrollments'
+        message: error.response?.data?.message || 'Failed to fetch user enrollments',
+        errors: error.response?.data?.errors || []
       };
     }
   }

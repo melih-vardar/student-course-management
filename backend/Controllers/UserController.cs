@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using backend.Services;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Controllers
 {
@@ -90,17 +91,27 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _userService.CreateUserAsync(request);
-            
-            if (result == null)
+            try
+            {
+                var result = await _userService.CreateUserAsync(request);
+                return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result);
+            }
+            catch (ValidationException ex)
             {
                 return BadRequest(new ErrorResponseDto
                 {
-                    Message = "User creation failed. Email might already exist or validation failed."
+                    Message = "User creation failed",
+                    Errors = ex.Errors
                 });
             }
-
-            return CreatedAtAction(nameof(GetUser), new { id = result.Id }, result);
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
+                {
+                    Message = "User creation failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
 
         [HttpPut("{id}")]
@@ -121,17 +132,27 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _userService.UpdateUserAsync(id, request);
-            
-            if (result == null)
+            try
             {
-                return NotFound(new ErrorResponseDto
+                var result = await _userService.UpdateUserAsync(id, request);
+                return Ok(result);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ErrorResponseDto
                 {
-                    Message = "User not found or validation failed"
+                    Message = "User update failed",
+                    Errors = ex.Errors
                 });
             }
-
-            return Ok(result);
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
+                {
+                    Message = "User update failed", 
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -197,17 +218,27 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            var result = await _userService.UpdateCurrentUserAsync(userId, request);
-
-            if (result == null)
+            try
             {
-                return NotFound(new ErrorResponseDto
+                var result = await _userService.UpdateCurrentUserAsync(userId, request);
+                return Ok(result);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new ErrorResponseDto
                 {
-                    Message = "User profile not found or validation failed"
+                    Message = "Profile update failed",
+                    Errors = ex.Errors
                 });
             }
-
-            return Ok(result);
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
+                {
+                    Message = "Profile update failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
 
         [HttpGet("{id}/enrollments")]

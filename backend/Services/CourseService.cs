@@ -10,8 +10,8 @@ namespace backend.Services
     {
         Task<PagedResponseDto<CourseResponseDto>> GetCoursesAsync(int page, int pageSize);
         Task<CourseDetailResponseDto?> GetCourseByIdAsync(int id);
-        Task<CourseResponseDto?> CreateCourseAsync(CreateCourseRequestDto request);
-        Task<CourseResponseDto?> UpdateCourseAsync(int id, UpdateCourseRequestDto request);
+        Task<CourseResponseDto> CreateCourseAsync(CreateCourseRequestDto request);
+        Task<CourseResponseDto> UpdateCourseAsync(int id, UpdateCourseRequestDto request);
         Task<bool> DeleteCourseAsync(int id);
         Task<List<CourseResponseDto>> GetAvailableCoursesForStudentAsync(string studentId);
         Task<List<StudentInfoDto>> GetCourseEnrollmentsAsync(int courseId);
@@ -90,15 +90,15 @@ namespace backend.Services
             };
         }
 
-        public async Task<CourseResponseDto?> CreateCourseAsync(CreateCourseRequestDto request)
+        public async Task<CourseResponseDto> CreateCourseAsync(CreateCourseRequestDto request)
         {
             try
             {
                 await _businessRuleService.ValidateUniqueCourseNameAsync(request.Name);
             }
-            catch (BusinessException)
+            catch (BusinessException ex)
             {
-                return null;
+                throw new BusinessException(ex.Message);
             }
 
             var course = new Course
@@ -123,19 +123,19 @@ namespace backend.Services
             };
         }
 
-        public async Task<CourseResponseDto?> UpdateCourseAsync(int id, UpdateCourseRequestDto request)
+        public async Task<CourseResponseDto> UpdateCourseAsync(int id, UpdateCourseRequestDto request)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
-                return null;
+                throw new BusinessException("Course not found");
 
             try
             {
                 await _businessRuleService.ValidateUniqueCourseNameAsync(request.Name, id);
             }
-            catch (BusinessException)
+            catch (BusinessException ex)
             {
-                return null;
+                throw new BusinessException(ex.Message);
             }
 
             course.Name = request.Name;

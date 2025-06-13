@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using backend.Services;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Controllers
 {
@@ -63,18 +64,29 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _authService.RegisterAsync(request);
-            
-            if (result == null)
+            try
+            {
+                var result = await _authService.RegisterAsync(request);
+                
+                // 201 Created response
+                return CreatedAtAction(nameof(Login), result);
+            }
+            catch (ValidationException ex)
             {
                 return BadRequest(new ErrorResponseDto
                 {
-                    Message = "Registration failed. Email might already exist or validation failed."
+                    Message = "Registration failed",
+                    Errors = ex.Errors
                 });
             }
-
-            // 201 Created response
-            return CreatedAtAction(nameof(Login), result);
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
+                {
+                    Message = "Registration failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
 
         [HttpPost("logout")]

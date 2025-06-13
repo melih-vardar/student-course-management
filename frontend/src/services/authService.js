@@ -47,10 +47,13 @@ export const authService = {
                      error.response?.data?.error ||
                      error.message || 
                      'Login failed';
+
+      const errors = error.response?.data?.errors || [];
       
       return {
         success: false,
-        message
+        message,
+        errors
       };
     }
   },
@@ -95,10 +98,13 @@ export const authService = {
                      error.response?.data?.error ||
                      error.message || 
                      'Registration failed';
+
+      const errors = error.response?.data?.errors || [];
       
       return {
         success: false,
-        message
+        message,
+        errors
       };
     }
   },

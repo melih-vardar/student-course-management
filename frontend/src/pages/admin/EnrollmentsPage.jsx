@@ -100,7 +100,12 @@ const EnrollmentsPage = () => {
         setSelectedCourseForEnroll('');
         loadData();
       } else {
-        showError(result.message || 'Failed to enroll student');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to enroll student:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to enroll student');
+        }
       }
     } catch (error) {
       showError('Failed to enroll student: ' + (error.message || 'Unknown error'));
@@ -124,7 +129,12 @@ const EnrollmentsPage = () => {
         showSuccess(`${studentName} withdrawn from ${courseName} successfully`);
         loadData(); 
       } else {
-        showError(result.message || 'Failed to withdraw student');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to withdraw student:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to withdraw student');
+        }
       }
     } catch (error) {
       showError('Failed to withdraw student');

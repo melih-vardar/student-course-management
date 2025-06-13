@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using backend.Services;
 using backend.DTOs;
+using backend.Exceptions;
 
 namespace backend.Controllers
 {
@@ -47,7 +48,6 @@ namespace backend.Controllers
                 });
             }
 
-            // Authentication.getPrincipal()
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (string.IsNullOrEmpty(userId))
@@ -55,9 +55,27 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            var result = await _enrollmentService.EnrollStudentAsync(userId, request);
-
-            return CreatedAtAction(nameof(GetEnrollments), result);
+            try
+            {
+                var result = await _enrollmentService.EnrollStudentAsync(userId, request);
+                return CreatedAtAction(nameof(GetEnrollments), result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ErrorResponseDto
+                {
+                    Message = "Enrollment failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+            catch (BusinessException ex)
+            {
+                return BadRequest(new ErrorResponseDto
+                {
+                    Message = "Enrollment failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
 
         [HttpPost("admin-enroll")]
@@ -76,17 +94,27 @@ namespace backend.Controllers
                 });
             }
 
-            var result = await _enrollmentService.AdminEnrollStudentAsync(request);
-            
-            if (result == null)
+            try
+            {
+                var result = await _enrollmentService.AdminEnrollStudentAsync(request);
+                return CreatedAtAction(nameof(GetEnrollments), result);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ErrorResponseDto
+                {
+                    Message = "Enrollment failed",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+            catch (BusinessException ex)
             {
                 return BadRequest(new ErrorResponseDto
                 {
-                    Message = "Enrollment failed. Student may already be enrolled in this course or student/course may not exist."
+                    Message = "Enrollment failed",
+                    Errors = new List<string> { ex.Message }
                 });
             }
-
-            return CreatedAtAction(nameof(GetEnrollments), result);
         }
 
         [HttpDelete("unenroll/{courseId}")]
@@ -100,34 +128,38 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            var result = await _enrollmentService.UnenrollStudentAsync(userId, courseId);
-            
-            if (!result)
+            try
+            {
+                await _enrollmentService.UnenrollStudentAsync(userId, courseId);
+                return NoContent();
+            }
+            catch (BusinessException ex)
             {
                 return BadRequest(new ErrorResponseDto
                 {
-                    Message = "Unenrollment failed. You may not be enrolled in this course."
+                    Message = "Unenrollment failed",
+                    Errors = new List<string> { ex.Message }
                 });
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{enrollmentId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AdminUnenrollStudent(int enrollmentId)
         {
-            var result = await _enrollmentService.AdminUnenrollStudentAsync(enrollmentId);
-            
-            if (!result)
+            try
+            {
+                await _enrollmentService.AdminUnenrollStudentAsync(enrollmentId);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
             {
                 return NotFound(new ErrorResponseDto
                 {
-                    Message = "Enrollment not found"
+                    Message = "Unenrollment failed",
+                    Errors = new List<string> { ex.Message }
                 });
             }
-
-            return NoContent();
         }
 
         [HttpGet("my-enrollments")]

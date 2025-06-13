@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         return { success: true };
       } else {
-        return { success: false, message: result.message };
+        return { success: false, message: result.message, errors: result.errors };
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         return { success: true, data: result.data };
       } else {
-        return { success: false, message: result.message };
+        return { success: false, message: result.message, errors: result.errors };
       }
     } catch (error) {
       return { success: false, message: 'Registration failed' };

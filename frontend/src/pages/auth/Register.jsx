@@ -9,6 +9,7 @@ import api from '../../services/api';
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [backendErrors, setBackendErrors] = useState([]);
   const { register: registerUser } = useAuth();
   const { showError, showSuccess } = useToast();
   const navigate = useNavigate();
@@ -58,7 +59,9 @@ const Register = () => {
       } else {
         console.error('Registration failed:', result.message);
         if (result.errors && result.errors.length > 0) {
-          result.errors.forEach(error => showError(error));
+          // Format errors as a list with line breaks
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Registration failed:\n${errorList}`, 8000); // Show longer for multiple errors
         } else {
           showError(result.message || 'Registration failed');
         }

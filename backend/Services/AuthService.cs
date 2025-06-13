@@ -8,7 +8,7 @@ namespace backend.Services
     public interface IAuthService
     {
         Task<AuthResponseDto?> LoginAsync(LoginRequestDto request);
-        Task<AuthResponseDto?> RegisterAsync(RegisterRequestDto request);
+        Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request);
         Task<bool> LogoutAsync(string userId);
     }
 
@@ -58,16 +58,33 @@ namespace backend.Services
             };
         }
 
-        public async Task<AuthResponseDto?> RegisterAsync(RegisterRequestDto request)
+        public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
         {
+            var errors = new List<string>();
+
+            // Business rule validations - tüm hataları topluyoruz
             try
             {
                 await _businessRuleService.ValidateUniqueEmailAsync(request.Email);
+            }
+            catch (BusinessException ex)
+            {
+                errors.Add(ex.Message);
+            }
+
+            try
+            {
                 await _businessRuleService.ValidateUserAgeAsync(request.DateOfBirth);
             }
-            catch (BusinessException)
+            catch (BusinessException ex)
             {
-                return null;
+                errors.Add(ex.Message);
+            }
+
+            // Eğer business rule hataları varsa Identity validation'a geçme
+            if (errors.Any())
+            {
+                throw new ValidationException(errors);
             }
 
             var user = new User
@@ -82,10 +99,14 @@ namespace backend.Services
                 EmailConfirmed = true // Direkt onaylı
             };
 
-            // Save User
+            // Save User - password validation hatalarını kontrol et
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
-                return null;
+            {
+                // Identity validation hatalarını ekle (password policy vb.)
+                var identityErrors = result.Errors.Select(e => e.Description).ToList();
+                throw new ValidationException(identityErrors);
+            }
 
             await _userManager.AddToRoleAsync(user, "Student");
 

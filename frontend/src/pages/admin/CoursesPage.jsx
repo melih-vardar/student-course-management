@@ -96,7 +96,12 @@ const CoursesPage = () => {
         reset();
         loadCourses();
       } else {
-        showError(result.message || 'Failed to create course');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to create course:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to create course');
+        }
       }
     } catch (error) {
       showError('Failed to create course');
@@ -123,7 +128,12 @@ const CoursesPage = () => {
         reset();
         loadCourses();
       } else {
-        showError(result.message || 'Failed to update course');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to update course:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to update course');
+        }
       }
     } catch (error) {
       showError('Failed to update course');
@@ -147,7 +157,12 @@ const CoursesPage = () => {
         showSuccess(`${courseName} deleted successfully`);
         loadCourses();
       } else {
-        showError(result.message || 'Failed to delete course');
+        if (result.errors && result.errors.length > 0) {
+          const errorList = result.errors.map(error => `• ${error}`).join('\n');
+          showError(`Failed to delete course:\n${errorList}`, 8000);
+        } else {
+          showError(result.message || 'Failed to delete course');
+        }
       }
     } catch (error) {
       showError('Failed to delete course');
