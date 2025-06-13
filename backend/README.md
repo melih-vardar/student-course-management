@@ -142,7 +142,7 @@ dotnet run
 
 #### 3. PostgreSQL'i bilgisayarınıza kurun:
 - [PostgreSQL İndir](https://www.postgresql.org/download/)
-- Kurulum sırasında şifre belirleyin (örn: `postgres`)
+- **Kurulum sırasında şifre olarak `postgres` yazın** (appsettings.json ile uyumlu olması için)
 - **Port olarak 5435 seçin** (varsayılan 5432 yerine)
 
 #### 4. Veritabanını oluşturun:
@@ -178,7 +178,7 @@ dotnet run
 - **Port:** 5435
 - **Database:** studentmanagementdb
 - **Username:** postgres
-- **Password:** [kurulum sırasında belirlediğiniz şifre]
+- **Password:** postgres
 
 5. **"Test Connection" ile test edin**
 6. **"Finish" ile kaydedin**
