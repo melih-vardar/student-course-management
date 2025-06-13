@@ -109,40 +109,40 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasıd�
 ## 🌐 API Endpoints
 
 ### 🔐 Kimlik Doğrulama
-- `POST /api/auth/register` - Kullanıcı kaydı
-- `POST /api/auth/login` - Kullanıcı girişi
-- `POST /api/auth/logout` - Kullanıcı çıkışı
-- `GET /api/auth/me` - Mevcut kullanıcı bilgisi
+- `POST /api/Auth/register` - Kullanıcı kaydı
+- `POST /api/Auth/login` - Kullanıcı girişi
+- `POST /api/Auth/logout` - Kullanıcı çıkışı
+- `GET /api/Auth/me` - Mevcut kullanıcı bilgisi
 
 ### 👥 Kullanıcı Yönetimi
-- `GET /api/user/profile` - Kendi profilini görüntüleme
-- `PUT /api/user/profile` - Kendi profilini güncelleme
-- `GET /api/user` - Tüm kullanıcılar (Admin)
-- `GET /api/user/students` - Sadece öğrenci listesi (Admin)
-- `GET /api/user/admins` - Sadece admin listesi (Admin)
-- `GET /api/user/{id}` - Kullanıcı detayı (Admin)
-- `POST /api/user` - Yeni kullanıcı oluşturma (Admin)
-- `PUT /api/user/{id}` - Kullanıcı güncelleme (Admin)
-- `DELETE /api/user/{id}` - Kullanıcı silme (Admin)
-- `GET /api/user/{id}/enrollments` - Kullanıcının kayıtları (Admin)
+- `GET /api/User/profile` - Kendi profilini görüntüleme
+- `PUT /api/User/profile` - Kendi profilini güncelleme
+- `GET /api/User` - Tüm kullanıcılar (Admin)
+- `GET /api/User/students` - Sadece öğrenci listesi (Admin)
+- `GET /api/User/admins` - Sadece admin listesi (Admin)
+- `GET /api/User/{id}` - Kullanıcı detayı (Admin)
+- `POST /api/User` - Yeni kullanıcı oluşturma (Admin)
+- `PUT /api/User/{id}` - Kullanıcı güncelleme (Admin)
+- `DELETE /api/User/{id}` - Kullanıcı silme (Admin)
+- `GET /api/User/{id}/enrollments` - Kullanıcının kayıtları (Admin)
 
 ### 📚 Ders Yönetimi
-- `GET /api/course` - Ders listesi (Admin)
-- `GET /api/course/{id}` - Ders detayı (Admin)
-- `GET /api/course/{id}/info` - Ders temel bilgisi (Admin)
-- `POST /api/course` - Ders oluşturma (Admin)
-- `PUT /api/course/{id}` - Ders güncelleme (Admin)
-- `DELETE /api/course/{id}` - Ders silme (Admin)
-- `GET /api/course/available` - Mevcut dersler (Öğrenci)
-- `GET /api/course/{id}/enrollments` - Ders kayıtları (Admin)
+- `GET /api/Course` - Ders listesi (Admin)
+- `GET /api/Course/{id}` - Ders detayı (Admin)
+- `GET /api/Course/{id}/info` - Ders temel bilgisi (Admin)
+- `POST /api/Course` - Ders oluşturma (Admin)
+- `PUT /api/Course/{id}` - Ders güncelleme (Admin)
+- `DELETE /api/Course/{id}` - Ders silme (Admin)
+- `GET /api/Course/available` - Mevcut dersler (Öğrenci)
+- `GET /api/Course/{id}/enrollments` - Ders kayıtları (Admin)
 
 ### 📝 Kayıt İşlemleri
-- `GET /api/enrollment` - Tüm kayıtlar (Admin)
-- `POST /api/enrollment/enroll` - Derse kayıt (Öğrenci)
-- `POST /api/enrollment/admin-enroll` - Admin kayıt (Admin)
-- `DELETE /api/enrollment/unenroll/{courseId}` - Dersten çıkma (Öğrenci)
-- `DELETE /api/enrollment/{enrollmentId}` - Admin kayıt silme (Admin)
-- `GET /api/enrollment/my-enrollments` - Kendi kayıtları (Öğrenci)
+- `GET /api/Enrollment` - Tüm kayıtlar (Admin)
+- `POST /api/Enrollment/enroll` - Derse kayıt (Öğrenci)
+- `POST /api/Enrollment/admin-enroll` - Admin kayıt (Admin)
+- `DELETE /api/Enrollment/unenroll/{courseId}` - Dersten çıkma (Öğrenci)
+- `DELETE /api/Enrollment/{enrollmentId}` - Admin kayıt silme (Admin)
+- `GET /api/Enrollment/my-enrollments` - Kendi kayıtları (Öğrenci)
 
 ## 🧪 Backend Testleri Çalıştırma
 
@@ -245,7 +245,7 @@ frontend/src/
 └── index.css        # Global CSS dosyası
 ```
 
-## 🎯 Frontend Özellikler ve Sayfalar
+## 🎯 Frontend Özellikleri ve Sayfalar
 
 ### 🔐 Kimlik Doğrulama
 - **Giriş Yapma** - JWT token ile güvenli giriş
@@ -275,45 +275,6 @@ frontend/src/
 - **Form Validasyonları** - Gerçek zamanlı doğrulama
 - **Rol Rozetleri** - Renkli kullanıcı rol göstergeleri
 
-## 🚀 Frontend Kurulum ve Çalıştırma
-
-### 📋 Ön Gereksinimler
-- **Node.js** (v18 veya üzeri) - [İndir](https://nodejs.org/)
-- **npm** (Node.js ile birlikte gelir)
-- **Git** - [İndir](https://git-scm.com/downloads)
-- **Backend API** - Çalışır durumda olmalı (http://localhost:5000)
-
-### 🔧 Kurulum Adımları
-
-#### 1. Projeyi bilgisayarınıza indirin:
-```bash
-git clone [repo-url]
-cd student-course-management/frontend
-```
-
-#### 2. Node.js'in kurulu olduğunu kontrol edin:
-```bash
-node --version
-npm --version
-```
-
-#### 3. Gerekli paketleri yükleyin:
-```bash
-npm install
-```
-
-#### 4. Backend API'nin çalıştığını kontrol edin:
-- Backend API'nin `http://localhost:5000` adresinde çalıştığından emin olun
-- Swagger dokümantasyonu: `http://localhost:5000/swagger`
-
-#### 5. Frontend uygulamasını başlatın:
-```bash
-npm run dev
-```
-
-#### 6. Tarayıcınızda kontrol edin:
-- **Frontend:** http://localhost:5173
-- Uygulama otomatik olarak tarayıcıda açılacaktır
 
 ## 🎨 Frontend UI Bileşenleri
 
@@ -352,10 +313,6 @@ npm run lint
 
 ---
 
-
-
----
-
 # 🎯 Proje Özellikleri
 
 ## Backend Özellikleri
@@ -373,57 +330,6 @@ npm run lint
 - 🛣️ **Routing:** React Router v7 ile
 - 📅 **Tarih İşlemleri:** date-fns ile
 - 🔑 **State Yönetimi:** Context API ile
-
----
-
-# 🆘 Sorun Giderme
-
-## Backend Sorunları
-
-### Docker ile ilgili sorunlar:
-```bash
-# Docker container'larını kontrol et
-docker-compose ps
-
-# Container'ları yeniden başlat
-docker-compose restart
-
-# Container'ları tamamen sil ve yeniden oluştur
-docker-compose down -v
-docker-compose up -d
-```
-
-### Uygulama çalışmıyor:
-```bash
-# Bağımlılıkları yeniden yükle
-dotnet restore
-
-# Projeyi temizle ve yeniden derle
-dotnet clean
-dotnet build
-```
-
-### Veritabanı bağlantı sorunu:
-- Docker container'ının çalıştığından emin olun: `docker-compose ps`
-- DBeaver'da bağlantı ayarlarını kontrol edin
-- Port çakışması varsa docker-compose.yml'deki portu değiştirin
-
-## Frontend Sorunları
-
-### Frontend çalışmıyor:
-```bash
-# Node modules'ları temizle ve yeniden yükle
-rm -rf node_modules package-lock.json
-npm install
-
-# Cache'i temizle
-npm run dev -- --force
-```
-
-### Backend bağlantı sorunu:
-- Backend API'nin `http://localhost:5000` adresinde çalıştığından emin olun
-- `src/services/api.js` dosyasındaki base URL'i kontrol edin
-- CORS ayarlarının doğru olduğundan emin olun
 
 ---
 
@@ -479,9 +385,6 @@ Password: Student123!
 
 # 🚀 KURULUM TALİMATLARI
 
-##  Backend Kurulum ve Çalıştırma
-
-
 ## 🐳 YÖNTEMİ 1: Docker ile Çalıştırma (ÖNERİLEN)
 
 > **✅ Avantajlar:** Bu yöntemle bilgisayarınızda sadece Docker yeterli! .NET SDK ve PostgreSQL kurmanıza gerek yok.
@@ -489,6 +392,8 @@ Password: Student123!
 ### 📋 Gereksinimler:
 - **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop)
 - **Git** - [İndir](https://git-scm.com/downloads)
+- **Node.js** (v18 veya üzeri) - [İndir](https://nodejs.org/)
+- **npm** (Node.js ile birlikte gelir)
 
 ### 🔧 Adımlar:
 
@@ -611,4 +516,51 @@ docker-compose up -d
 
 ---
 
-**🎯 Başarıyla kurulum yaptıysanız yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapabilirsiniz!**
+## Backend Sorunları
+
+### Docker ile ilgili sorunlar:
+```bash
+# Docker container'larını kontrol et
+docker-compose ps
+
+# Container'ları yeniden başlat
+docker-compose restart
+
+# Container'ları tamamen sil ve yeniden oluştur
+docker-compose down -v
+docker-compose up -d
+```
+
+### Uygulama çalışmıyor:
+```bash
+# Bağımlılıkları yeniden yükle
+dotnet restore
+
+# Projeyi temizle ve yeniden derle
+dotnet clean
+dotnet build
+```
+
+### Veritabanı bağlantı sorunu:
+- Docker container'ının çalıştığından emin olun: `docker-compose ps`
+- DBeaver'da bağlantı ayarlarını kontrol edin
+- Port çakışması varsa docker-compose.yml'deki portu değiştirin
+
+## Frontend Sorunları
+
+### Frontend çalışmıyor:
+```bash
+# Node modules'ları temizle ve yeniden yükle
+rm -rf node_modules package-lock.json
+npm install
+
+# Cache'i temizle
+npm run dev -- --force
+```
+
+### Backend bağlantı sorunu:
+- Backend API'nin `http://localhost:5000` adresinde çalıştığından emin olun
+- `src/services/api.js` dosyasındaki base URL'i kontrol edin
+- CORS ayarlarının doğru olduğundan emin olun
+
+---
