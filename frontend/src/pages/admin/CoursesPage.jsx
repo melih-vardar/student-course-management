@@ -144,7 +144,7 @@ const CoursesPage = () => {
 
   const handleDeleteCourse = async (courseId, courseName) => {
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete "${courseName}"?\n\nThis action cannot be undone and will remove all student enrollments for this course.`
+      `Are you sure you want to delete "${courseName}"?`
     );
 
     if (!isConfirmed) return;

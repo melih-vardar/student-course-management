@@ -1,7 +1,7 @@
-# 🎓 Öğrenci ve Ders Yönetimi Sistemi - Backend (.NET 8 Web API)
+# 🎓 Öğrenci ve Ders Yönetimi Sistemi - Fullstack Web Uygulaması
 
 ## 📋 Proje Hakkında
-Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasının **backend** kısmıdır. Sistem, öğrencilerin derslere kaydolmasını, admin kullanıcıların öğrenci ve ders yönetimini yapmasını sağlayan modern bir REST API platformudur.
+Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasıdır. Sistem, öğrencilerin derslere kaydolmasını, admin kullanıcıların öğrenci ve ders yönetimini yapmasını sağlayan modern bir fullstack platformudur. Backend .NET 8 Web API, frontend React.js teknolojileri ile geliştirilmiştir.
 
 ## 👥 Kullanıcı Rolleri ve Yetkiler
 
@@ -11,6 +11,7 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasın�
 - 🔄 Öğrenci-ders eşleştirmelerini yönetme
 - 📊 Tüm öğrenci ve ders listelerini görüntüleme
 - 📝 Sistem genelinde tam yetki
+- 🔄 Kullanıcı rollerini değiştirme (Student ↔ Admin)
 
 ### 👨‍🎓 Öğrenci Rolü
 - 📝 Kendi profilini görüntüleme ve güncelleme
@@ -71,6 +72,10 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasın�
 - 📊 Admin tüm öğrenci-ders ilişkilerini görüntüleyebilir
 - 🗑️ Öğrencisi olan ders silinemez
 
+---
+
+# 🔧 Backend (.NET 8 Web API)
+
 ## 🛠️ Kullanılan Teknolojiler
 
 ### Backend
@@ -99,94 +104,7 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasın�
 ### Test
 - 🧪 **xUnit** test framework
 - 🎯 **Moq** ile unit testing
-- ✅ **15 adet controller unit testi**
-
-## 🚀 Kurulum ve Çalıştırma
-
-### 📋 Ön Gereksinimler
-- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop/) *(Önerilen yöntem)*
-- **Git** - [İndir](https://git-scm.com/downloads)
-- **DBeaver** (Veritabanı yönetimi için) - [İndir](https://dbeaver.io/download/)
-
-> **💡 .NET SDK Kurulumu:** Docker Compose yöntemi kullanıyorsanız .NET SDK kurmanıza gerek yoktur. Docker container'ı içinde gerekli .NET 8 sürümü hazır olarak gelir.
-> 
-> **📋 Docker'sız kurulum için:** **.NET 8 SDK** (8.0.400 veya üzeri) - [İndir](https://dotnet.microsoft.com/download)
-
-### 🔧 Kurulum Adımları
-
-#### 1. Projeyi bilgisayarınıza indirin:
-```bash
-git clone [repo-url]
-cd student-course-management/backend
-```
-
-#### 2. Docker'ın çalıştığını kontrol edin:
-```bash
-docker --version
-docker-compose --version
-```
-
-### 🐳 Docker ile Çalıştırma (ÖNERİLEN)
-
-> **✅ Avantajlar:** Bu yöntemle bilgisayarınızda .NET SDK kurulu olmasına gerek yok. Sadece Docker yeterli!
-
-#### 3. Uygulamayı Docker ile başlatın:
-```bash
-# PostgreSQL veritabanını Docker'da başlat
-docker-compose up -d
-
-# Uygulamayı çalıştır
-dotnet run
-```
-
-#### 4. Tarayıcınızda kontrol edin:
-- **API:** http://localhost:5000
-- **Swagger Dokümantasyonu:** http://localhost:5000/swagger
-
-### 💻 Docker'sız Çalıştırma (Alternatif)
-
-#### 3. PostgreSQL'i bilgisayarınıza kurun:
-- [PostgreSQL İndir](https://www.postgresql.org/download/)
-- **Kurulum sırasında şifre olarak `postgres` yazın** (appsettings.json ile uyumlu olması için)
-- **Port olarak 5435 seçin** (varsayılan 5432 yerine)
-
-#### 4. Veritabanını oluşturun:
-```bash
-# PostgreSQL komut satırını açın ve şu komutu çalıştırın:
-createdb studentmanagementdb
-```
-
-#### 5. Uygulamayı çalıştırın:
-```bash
-dotnet run
-```
-
-> **💡 İpucu:** PostgreSQL'i 5435 portunda kurduğunuz için `appsettings.json` dosyasını değiştirmenize gerek yok. Proje zaten 5435 portuna bağlanacak şekilde yapılandırılmış.
-
-## 🗃️ Veritabanı Yönetimi (DBeaver)
-
-### DBeaver Bağlantı Kurulumu:
-1. **DBeaver'ı açın**
-2. **"New Database Connection" butonuna tıklayın** (+ ikonu)
-3. **PostgreSQL'i seçin** ve "Next"
-4. **Bağlantı bilgilerini girin:**
-
-**Docker ile çalıştırıyorsanız:**
-- **Host:** localhost
-- **Port:** 5435
-- **Database:** studentmanagementdb
-- **Username:** postgres
-- **Password:** postgres
-
-**Docker'sız çalıştırıyorsanız:**
-- **Host:** localhost
-- **Port:** 5435
-- **Database:** studentmanagementdb
-- **Username:** postgres
-- **Password:** postgres
-
-5. **"Test Connection" ile test edin**
-6. **"Finish" ile kaydedin**
+- ✅ **15 adet** controller unit testi
 
 ## 🌐 API Endpoints
 
@@ -226,26 +144,9 @@ dotnet run
 - `DELETE /api/enrollment/{enrollmentId}` - Admin kayıt silme (Admin)
 - `GET /api/enrollment/my-enrollments` - Kendi kayıtları (Öğrenci)
 
-## 🔑 Varsayılan Kullanıcı Bilgileri
+## 🧪 Backend Testleri Çalıştırma
 
-### Admin Hesabı:
-```
-Email: admin@admin.com
-Password: Admin123!
-```
-
-> **🔒 Güvenlik Notu:** Güvenlik nedeniyle doğrudan admin hesabı oluşturamazsınız. Yeni kullanıcılar varsayılan olarak "Student" rolü ile kaydolur. Admin yetkisi vermek için:
-> 1. Yukarıdaki admin hesabı ile giriş yapın
-> 2. İstediğiniz kullanıcıyı oluşturun veya mevcut bir kullanıcıyı güncelleyin
-> 3. Kullanıcının rolünü "Admin" olarak değiştirin
-
-### Öğrenci Hesabı:
-```
-Email: student@student.com
-Password: Student123!
-```
-
-## 🧪 Testleri Çalıştırma
+> **⚠️ Gereksinim:** Bu komutlar için bilgisayarınızda **.NET 8 SDK** kurulu olması gerekir.
 
 ```bash
 # Test klasörüne git
@@ -256,13 +157,13 @@ dotnet test
 ```
 
 **Test Kapsamı:**
-- ✅ **15 adet unit test**
-- 🔐 **AuthController testleri** (3 test)
-- 📚 **CourseController testleri** (4 test)
-- 📝 **EnrollmentController testleri** (4 test)
-- 👥 **UserController testleri** (4 test)
+- ✅ 15 adet unit test
+- 🔐 AuthController testleri (3 test)
+- 📚 CourseController testleri (4 test)
+- 📝 EnrollmentController testleri (4 test)
+- 👥 UserController testleri (4 test)
 
-## 🔧 Geliştirme Komutları
+## 🔧 Backend Geliştirme Komutları
 
 ```bash
 # Uygulamayı çalıştır
@@ -281,15 +182,203 @@ dotnet test
 docker-compose down
 ```
 
-## 🎯 Proje Özellikleri
+---
 
-- 🎯 **Tek Port**: `http://localhost:5000`
-- 📝 **Hazır Konfigürasyon**: Ekstra ayar gerektirmez
-- 🔑 **Güvenli JWT**: Production ready
-- 🗑️ **Temiz Kod**: Gereksiz karmaşıklık yok
-- 🚀 **Hızlı Başlangıç**: `git clone` → `docker-compose up -d` → `dotnet run`
+# 🎨 Frontend (React.js)
 
-## 🆘 Sorun Giderme
+## 🛠️ Kullanılan Teknolojiler
+
+### Frontend
+- ⚛️ **React.js** (v19.1.0)
+- 🎨 **TailwindCSS** (v4.1.8) - Modern CSS framework
+- 🚀 **Vite** (v6.3.5) - Hızlı build tool
+- 📝 **React Hook Form** (v7.57.0) - Form yönetimi
+- 🛣️ **React Router DOM** (v7.6.2) - Sayfa yönlendirme
+- 🔄 **Axios** (v1.9.0) - HTTP istekleri
+- 📅 **date-fns** (v4.1.0) - Tarih işlemleri
+
+### Geliştirme Araçları
+- 🔧 **ESLint** (v9.25.0) - Kod kalitesi
+- 📦 **Vite Plugin React** (v4.4.1) - React desteği
+
+### Güvenlik ve Kimlik Doğrulama
+- 🔐 **JWT (JSON Web Tokens)** - Token tabanlı kimlik doğrulama
+- 👮‍♂️ **Role-based access control** - Rol tabanlı yetkilendirme
+- 🛡️ **Protected Routes** - Korumalı sayfa yönlendirmeleri
+- 🔑 **Context API** - Global state yönetimi
+
+## 🏗️ Frontend Proje Mimarisi
+
+```
+frontend/src/
+├── assets/           # Statik dosyalar (resimler, ikonlar vb.)
+├── components/       # Yeniden kullanılabilir UI bileşenleri
+│   ├── ui/          # Temel UI bileşenleri (Toast, LoadingSpinner, Pagination)
+│   ├── Navbar.jsx   # Navigasyon bileşeni
+│   └── ProtectedRoute.jsx # Korumalı rota bileşeni
+├── contexts/         # React context yapıları
+│   └── AuthContext.jsx # Kimlik doğrulama context'i
+├── pages/           # Sayfa bileşenleri
+│   ├── admin/       # Admin sayfaları
+│   │   ├── Dashboard.jsx      # Admin dashboard
+│   │   ├── StudentsPage.jsx   # Öğrenci yönetimi
+│   │   ├── CoursesPage.jsx    # Ders yönetimi
+│   │   └── EnrollmentsPage.jsx # Kayıt yönetimi
+│   ├── student/     # Öğrenci sayfaları
+│   │   ├── Dashboard.jsx      # Öğrenci dashboard
+│   │   ├── Profile.jsx        # Profil yönetimi
+│   │   ├── AvailableCourses.jsx # Mevcut dersler
+│   │   └── MyEnrollments.jsx  # Kayıtlı dersler
+│   └── auth/        # Kimlik doğrulama sayfaları
+│       ├── Login.jsx    # Giriş sayfası
+│       └── Register.jsx # Kayıt sayfası
+├── services/        # API servis dosyaları
+│   ├── api.js           # Axios konfigürasyonu
+│   ├── authService.js   # Kimlik doğrulama servisleri
+│   ├── userService.js   # Kullanıcı servisleri
+│   ├── courseService.js # Ders servisleri
+│   └── enrollmentService.js # Kayıt servisleri
+├── utils/           # Yardımcı fonksiyonlar
+│   └── dateUtils.js # Tarih işleme fonksiyonları
+├── App.jsx          # Ana uygulama bileşeni
+├── main.jsx         # Uygulama giriş noktası
+└── index.css        # Global CSS dosyası
+```
+
+## 🎯 Frontend Özellikler ve Sayfalar
+
+### 🔐 Kimlik Doğrulama
+- **Giriş Yapma** - JWT token ile güvenli giriş
+- **Kayıt Olma** - Otomatik giriş ile kayıt
+- **Çıkış Yapma** - Güvenli oturum sonlandırma
+- **Korumalı Rotalar** - Yetkisiz erişimi engelleme
+
+### 👨‍💼 Admin Özellikleri
+- **Dashboard** - Sistem geneli istatistikler
+- **Öğrenci Yönetimi** - CRUD operasyonları, rol değiştirme, email güncelleme
+- **Ders Yönetimi** - CRUD operasyonları, detaylı bilgiler
+- **Kayıt Yönetimi** - Öğrenci-ders eşleştirmeleri
+- **Detay Modalları** - Öğrenci ve ders detayları
+
+### 👨‍🎓 Öğrenci Özellikleri
+- **Dashboard** - Kişisel istatistikler
+- **Profil Yönetimi** - Kişisel bilgi ve email güncelleme
+- **Mevcut Dersler** - Kayıt olunabilir dersler
+- **Kayıtlı Dersler** - Mevcut kayıtlar ve çıkma
+
+### 🎨 UI/UX Özellikleri
+- **Responsive Tasarım** - Mobil uyumlu
+- **Toast Bildirimleri** - Detaylı hata mesajları ve kullanıcı geri bildirimleri
+- **Loading Durumları** - Yükleme göstergeleri
+- **Pagination** - Sayfalama sistemi
+- **Arama ve Filtreleme** - Gelişmiş arama
+- **Form Validasyonları** - Gerçek zamanlı doğrulama
+- **Rol Rozetleri** - Renkli kullanıcı rol göstergeleri
+
+## 🚀 Frontend Kurulum ve Çalıştırma
+
+### 📋 Ön Gereksinimler
+- **Node.js** (v18 veya üzeri) - [İndir](https://nodejs.org/)
+- **npm** (Node.js ile birlikte gelir)
+- **Git** - [İndir](https://git-scm.com/downloads)
+- **Backend API** - Çalışır durumda olmalı (http://localhost:5000)
+
+### 🔧 Kurulum Adımları
+
+#### 1. Projeyi bilgisayarınıza indirin:
+```bash
+git clone [repo-url]
+cd student-course-management/frontend
+```
+
+#### 2. Node.js'in kurulu olduğunu kontrol edin:
+```bash
+node --version
+npm --version
+```
+
+#### 3. Gerekli paketleri yükleyin:
+```bash
+npm install
+```
+
+#### 4. Backend API'nin çalıştığını kontrol edin:
+- Backend API'nin `http://localhost:5000` adresinde çalıştığından emin olun
+- Swagger dokümantasyonu: `http://localhost:5000/swagger`
+
+#### 5. Frontend uygulamasını başlatın:
+```bash
+npm run dev
+```
+
+#### 6. Tarayıcınızda kontrol edin:
+- **Frontend:** http://localhost:5173
+- Uygulama otomatik olarak tarayıcıda açılacaktır
+
+## 🎨 Frontend UI Bileşenleri
+
+### Temel Bileşenler
+- **Toast** - Bildirim sistemi (başarı, hata, uyarı) - Çoklu hata mesajları desteği
+- **LoadingSpinner** - Yükleme göstergesi
+- **Pagination** - Sayfalama kontrolü
+- **Navbar** - Navigasyon menüsü
+- **ProtectedRoute** - Korumalı rota wrapper'ı
+
+### Form Bileşenleri
+- **React Hook Form** ile form yönetimi
+- **Gerçek zamanlı validasyon** ile kullanıcı dostu hata mesajları
+- **Responsive form tasarımları**
+
+### Modal ve Detay Sayfaları
+- **Öğrenci Detay Modalı** - Kişisel bilgiler ve kayıtlı dersler
+- **Ders Detay Modalı** - Ders bilgileri ve kayıtlı öğrenciler
+- **Düzenleme Modalları** - Inline düzenleme özellikleri
+
+## 🔧 Frontend Geliştirme Komutları
+
+```bash
+# Geliştirme sunucusunu başlat
+npm run dev
+
+# Projeyi production için derle
+npm run build
+
+# Derlenen projeyi önizle
+npm run preview
+
+# Kod kalitesi kontrolü
+npm run lint
+```
+
+---
+
+
+
+---
+
+# 🎯 Proje Özellikleri
+
+## Backend Özellikleri
+- 🎯 **Tek Port:** http://localhost:5000
+- 📝 **Hazır Konfigürasyon:** Ekstra ayar gerektirmez
+- 🔑 **Güvenli JWT:** Production ready
+- 🗑️ **Temiz Kod:** Gereksiz karmaşıklık yok
+- 🚀 **Hızlı Başlangıç:** git clone → docker-compose up -d → dotnet run
+
+## Frontend Özellikleri
+- 🎯 **Modern React:** React 19.1.0 ile geliştirildi
+- 🎨 **TailwindCSS v4:** En güncel CSS framework
+- 📝 **Form Yönetimi:** React Hook Form ile
+- 🔄 **API İstekleri:** Axios ile yönetiliyor
+- 🛣️ **Routing:** React Router v7 ile
+- 📅 **Tarih İşlemleri:** date-fns ile
+- 🔑 **State Yönetimi:** Context API ile
+
+---
+
+# 🆘 Sorun Giderme
+
+## Backend Sorunları
 
 ### Docker ile ilgili sorunlar:
 ```bash
@@ -317,8 +406,209 @@ dotnet build
 ### Veritabanı bağlantı sorunu:
 - Docker container'ının çalıştığından emin olun: `docker-compose ps`
 - DBeaver'da bağlantı ayarlarını kontrol edin
-- Port çakışması varsa `docker-compose.yml`'deki portu değiştirin
+- Port çakışması varsa docker-compose.yml'deki portu değiştirin
 
-## 👨‍💻 Geliştirici
+## Frontend Sorunları
+
+### Frontend çalışmıyor:
+```bash
+# Node modules'ları temizle ve yeniden yükle
+rm -rf node_modules package-lock.json
+npm install
+
+# Cache'i temizle
+npm run dev -- --force
+```
+
+### Backend bağlantı sorunu:
+- Backend API'nin `http://localhost:5000` adresinde çalıştığından emin olun
+- `src/services/api.js` dosyasındaki base URL'i kontrol edin
+- CORS ayarlarının doğru olduğundan emin olun
+
+---
+
+# 👨‍💻 Geliştirici
 
 **Melih Vardar** - Fullstack Developer
+
+---
+
+# 📝 Notlar
+
+## Backend
+- Proje **.NET 8** ile geliştirilmiştir
+- **PostgreSQL** veritabanı kullanılmaktadır
+- **Docker** ile kolay deployment sağlanmaktadır
+- **JWT** ile güvenli kimlik doğrulama yapılmaktadır
+- **xUnit** ile kapsamlı test coverage'ı mevcuttur
+
+## Frontend
+- Proje **Vite** ile oluşturulmuştur
+- **TailwindCSS v4** kullanılmaktadır (en güncel versiyon)
+- **React Hook Form** ile form yönetimi sağlanmaktadır
+- **Axios** ile API istekleri yönetilmektedir
+- **React Router v7** ile sayfa yönlendirmeleri yapılmaktadır
+- **date-fns** ile tarih işlemleri gerçekleştirilmektedir
+- **Context API** ile global state yönetimi yapılmaktadır
+- **Detaylı hata yönetimi** ile kullanıcı dostu deneyim sağlanmaktadır
+
+---
+
+# 🔑 VARSAYILAN KULLANICI BİLGİLERİ
+
+## Admin Hesabı:
+```
+Email: admin@admin.com
+Password: Admin123!
+```
+
+## Öğrenci Hesabı:
+```
+Email: student@student.com
+Password: Student123!
+```
+
+> **🔒 Güvenlik Notu:** Güvenlik nedeniyle doğrudan admin hesabı oluşturamazsınız. Yeni kullanıcılar varsayılan olarak "Student" rolü ile kaydolur. Admin yetkisi vermek için:
+> 1. Yukarıdaki admin hesabı ile giriş yapın
+> 2. İstediğiniz kullanıcıyı oluşturun veya mevcut bir kullanıcıyı güncelleyin
+> 3. Kullanıcının rolünü "Admin" olarak değiştirin
+
+> **💡 İpucu:** Yeni hesap oluşturduğunuzda otomatik olarak "Student" rolü atanır. Admin yetkisi vermek için mevcut admin hesabı ile giriş yapıp kullanıcı rolünü değiştirin.
+
+---
+
+# 🚀 KURULUM TALİMATLARI
+
+##  Backend Kurulum ve Çalıştırma
+
+
+## 🐳 YÖNTEMİ 1: Docker ile Çalıştırma (ÖNERİLEN)
+
+> **✅ Avantajlar:** Bu yöntemle bilgisayarınızda sadece Docker yeterli! .NET SDK ve PostgreSQL kurmanıza gerek yok.
+
+### 📋 Gereksinimler:
+- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop)
+- **Git** - [İndir](https://git-scm.com/downloads)
+
+### 🔧 Adımlar:
+
+#### 1. Projeyi indirin:
+```bash
+git clone [repo-url]
+cd student-course-management
+```
+
+#### 2. Backend'i başlatın:
+```bash
+cd backend
+docker-compose up -d
+```
+> **💡 Not:** Bu komut hem PostgreSQL hem de .NET API'yi otomatik başlatır!
+
+#### 3. Frontend'i başlatın:
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
+#### 4. Kontrol edin:
+- **Backend API:** http://localhost:5000
+- **Swagger:** http://localhost:5000/swagger
+- **Frontend:** http://localhost:5173
+
+#### 5. Yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapın!
+
+---
+
+## 💻 YÖNTEMİ 2: Docker'sız Çalıştırma (Alternatif)
+
+> **⚠️ Dikkat:** Bu yöntem daha karmaşıktır. Sadece Docker kullanamıyorsanız tercih edin.
+
+### 📋 Gereksinimler:
+- **.NET 8 SDK** (8.0.400 veya üzeri) - [İndir](https://dotnet.microsoft.com/download)
+- **PostgreSQL** - [İndir](https://www.postgresql.org/download/)
+- **Node.js** (v18 veya üzeri) - [İndir](https://nodejs.org/)
+- **Git** - [İndir](https://git-scm.com/downloads)
+
+### 🔧 Adımlar:
+
+#### 1. PostgreSQL'i kurun:
+- Port: **5435** (varsayılan 5432 değil!)
+- Şifre: **postgres**
+- Veritabanı adı: **studentmanagementdb**
+
+#### 2. Projeyi indirin:
+```bash
+git clone [repo-url]
+cd student-course-management
+```
+
+#### 3. Backend'i başlatın:
+```bash
+cd backend
+dotnet run
+```
+
+#### 4. Frontend'i başlatın (yeni terminal):
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### 5. Kontrol edin:
+- **Backend API:** http://localhost:5000
+- **Frontend:** http://localhost:5173
+
+#### 6. Yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapın!
+
+---
+
+## 🗃️ Veritabanı Yönetimi (DBeaver) - İSTEĞE BAĞLI
+
+> **💡 Not:** Veritabanını görsel olarak yönetmek istiyorsanız DBeaver kurabilirsiniz.
+
+### DBeaver Kurulumu ve Bağlantısı:
+
+#### 1. DBeaver'ı indirin ve kurun:
+- [DBeaver İndir](https://dbeaver.io/download/)
+
+#### 2. Bağlantı kurun:
+1. **DBeaver'ı açın**
+2. **"New Database Connection" butonuna tıklayın** (+ ikonu)
+3. **PostgreSQL'i seçin** ve "Next"
+4. **Bağlantı bilgilerini girin:**
+   - **Host:** localhost
+   - **Port:** 5435
+   - **Database:** studentmanagementdb
+   - **Username:** postgres
+   - **Password:** postgres
+5. **"Test Connection" ile test edin**
+6. **"Finish" ile kaydedin**
+
+---
+
+## 🆘 Sorun mu Yaşıyorsunuz?
+
+### Docker Sorunları:
+```bash
+# Container'ları kontrol et
+docker-compose ps
+
+# Yeniden başlat
+docker-compose restart
+
+# Tamamen sil ve yeniden başlat
+docker-compose down -v
+docker-compose up -d
+```
+
+### Genel Sorunlar:
+- **Port 5000 kullanımda:** Diğer uygulamaları kapatın
+- **Port 5173 kullanımda:** `npm run dev -- --port 3000` deneyin
+- **PostgreSQL bağlanamıyor:** Port ve şifre ayarlarını kontrol edin
+
+---
+
+**🎯 Başarıyla kurulum yaptıysanız yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapabilirsiniz!**

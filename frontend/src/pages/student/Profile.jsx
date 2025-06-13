@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { userService } from '../../services/userService';
+import { enrollmentService } from '../../services/enrollmentService';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import { displayDateOnly, toUTCString, isValidAge, isDateInFuture, getCurrentDateForInput } from '../../utils/dateUtils';
@@ -11,6 +12,7 @@ const StudentProfile = () => {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [enrolledCoursesCount, setEnrolledCoursesCount] = useState(0);
   const { user } = useAuth();
   const { showSuccess, showError } = useToast();
 
@@ -26,23 +28,45 @@ const StudentProfile = () => {
     loadProfile();
   }, []);
 
+  // Sayfa focus aldığında profili yeniden yükle
+  useEffect(() => {
+    const handleFocus = () => {
+      loadProfile();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
   const loadProfile = async () => {
     setLoading(true);
     try {
-      const result = await userService.getProfile();
+      // Profile bilgilerini ve enrollment sayısını paralel olarak yükle
+      const [profileResult, enrollmentsResult] = await Promise.all([
+        userService.getProfile(),
+        enrollmentService.getMyEnrollments()
+      ]);
       
-      if (result.success) {
-        setUserProfile(result.data);
+      if (profileResult.success) {
+        setUserProfile(profileResult.data);
         
-        setValue('firstName', result.data.firstName);
-        setValue('lastName', result.data.lastName);
-        setValue('email', result.data.email);
-        setValue('dateOfBirth', result.data.dateOfBirth.split('T')[0]); // Convert to YYYY-MM-DD format
+        setValue('firstName', profileResult.data.firstName);
+        setValue('lastName', profileResult.data.lastName);
+        setValue('email', profileResult.data.email);
+        setValue('dateOfBirth', profileResult.data.dateOfBirth.split('T')[0]); // Convert to YYYY-MM-DD format
       } else {
-        showError(result.message || 'Failed to load profile');
+        showError(profileResult.message || 'Failed to load profile');
+      }
+
+      // Enrollment sayısını güncelle
+      if (enrollmentsResult.success) {
+        setEnrolledCoursesCount(enrollmentsResult.data?.length || 0);
+      } else {
+        setEnrolledCoursesCount(0);
       }
     } catch (error) {
       showError('Failed to load profile');
+      setEnrolledCoursesCount(0);
     } finally {
       setLoading(false);
     }
@@ -110,8 +134,22 @@ const StudentProfile = () => {
     <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="mt-2 text-gray-600">View and edit your personal information</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+              <p className="mt-2 text-gray-600">View and edit your personal information</p>
+            </div>
+            <button
+              onClick={loadProfile}
+              disabled={loading}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </button>
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg">
@@ -186,7 +224,7 @@ const StudentProfile = () => {
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Enrolled Courses</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{userProfile?.enrolledCoursesCount || 0} courses</dd>
+                  <dd className="mt-1 text-sm text-gray-900">{enrolledCoursesCount} courses</dd>
                 </div>
               </dl>
             ) : (

@@ -106,93 +106,6 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasıd�
 - 🎯 **Moq** ile unit testing
 - ✅ **15 adet** controller unit testi
 
-## 🚀 Backend Kurulum ve Çalıştırma
-
-### 📋 Ön Gereksinimler
-- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop) *(Önerilen yöntem)*
-- **Git** - [İndir](https://git-scm.com/downloads)
-- **DBeaver** (Veritabanı yönetimi için) - [İndir](https://dbeaver.io/download/)
-
-> **💡 .NET SDK Kurulumu:** Docker Compose yöntemi kullanıyorsanız .NET SDK kurmanıza gerek yoktur. Docker container'ı içinde gerekli .NET 8 sürümü hazır olarak gelir.
-> 
-> **📋 Docker'sız kurulum için:** **.NET 8 SDK** (8.0.400 veya üzeri) - [İndir](https://dotnet.microsoft.com/download)
-
-### 🔧 Kurulum Adımları
-
-#### 1. Projeyi bilgisayarınıza indirin:
-```bash
-git clone [repo-url]
-cd student-course-management/backend
-```
-
-#### 2. Docker'ın çalıştığını kontrol edin:
-```bash
-docker --version
-docker-compose --version
-```
-
-### 🐳 Docker ile Çalıştırma (ÖNERİLEN)
-
-> **✅ Avantajlar:** Bu yöntemle bilgisayarınızda .NET SDK kurulu olmasına gerek yok. Sadece Docker yeterli!
-
-#### 3. Uygulamayı Docker ile başlatın:
-```bash
-# PostgreSQL veritabanını Docker'da başlat
-docker-compose up -d
-
-# Uygulamayı çalıştır
-dotnet run
-```
-
-#### 4. Tarayıcınızda kontrol edin:
-- **API:** http://localhost:5000
-- **Swagger Dokümantasyonu:** http://localhost:5000/swagger
-
-### 💻 Docker'sız Çalıştırma (Alternatif)
-
-#### 3. PostgreSQL'i bilgisayarınıza kurun:
-- [PostgreSQL İndir](https://www.postgresql.org/download/)
-- Kurulum sırasında şifre olarak **postgres** belirleyin (appsettings.json ile uyumlu olması için)
-- Port olarak 5435 seçin (varsayılan 5432 yerine)
-
-#### 4. Veritabanını oluşturun:
-```bash
-# PostgreSQL komut satırını açın ve şu komutu çalıştırın:
-createdb studentmanagementdb
-```
-
-#### 5. Uygulamayı çalıştırın:
-```bash
-dotnet run
-```
-
-> **💡 İpucu:** PostgreSQL'i 5435 portunda ve şifreyi `postgres` olarak kurduğunuz için appsettings.json dosyasını değiştirmenize gerek yok. Proje zaten bu ayarlarla bağlanacak şekilde yapılandırılmış.
-
-## 🗃️ Veritabanı Yönetimi (DBeaver)
-
-### DBeaver Bağlantı Kurulumu:
-1. DBeaver'ı açın
-2. "New Database Connection" butonuna tıklayın (+ ikonu)
-3. PostgreSQL'i seçin ve "Next"
-4. Bağlantı bilgilerini girin:
-
-**Docker ile çalıştırıyorsanız:**
-- Host: localhost
-- Port: 5435
-- Database: studentmanagementdb
-- Username: postgres
-- Password: postgres
-
-**Docker'sız çalıştırıyorsanız:**
-- Host: localhost
-- Port: 5435
-- Database: studentmanagementdb
-- Username: postgres
-- Password: postgres
-
-5. "Test Connection" ile test edin
-6. "Finish" ile kaydedin
-
 ## 🌐 API Endpoints
 
 ### 🔐 Kimlik Doğrulama
@@ -232,6 +145,8 @@ dotnet run
 - `GET /api/enrollment/my-enrollments` - Kendi kayıtları (Öğrenci)
 
 ## 🧪 Backend Testleri Çalıştırma
+
+> **⚠️ Gereksinim:** Bu komutlar için bilgisayarınızda **.NET 8 SDK** kurulu olması gerekir.
 
 ```bash
 # Test klasörüne git
@@ -437,26 +352,7 @@ npm run lint
 
 ---
 
-# 🔑 Varsayılan Kullanıcı Bilgileri
 
-## Admin Hesabı:
-```
-Email: admin@admin.com
-Password: Admin123!
-```
-
-## Öğrenci Hesabı:
-```
-Email: student@student.com
-Password: Student123!
-```
-
-> **🔒 Güvenlik Notu:** Güvenlik nedeniyle doğrudan admin hesabı oluşturamazsınız. Yeni kullanıcılar varsayılan olarak "Student" rolü ile kaydolur. Admin yetkisi vermek için:
-> 1. Yukarıdaki admin hesabı ile giriş yapın
-> 2. İstediğiniz kullanıcıyı oluşturun veya mevcut bir kullanıcıyı güncelleyin
-> 3. Kullanıcının rolünü "Admin" olarak değiştirin
-
-> **💡 İpucu:** Yeni hesap oluşturduğunuzda otomatik olarak "Student" rolü atanır. Admin yetkisi vermek için mevcut admin hesabı ile giriş yapıp kullanıcı rolünü değiştirin.
 
 ---
 
@@ -555,3 +451,164 @@ npm run dev -- --force
 - **date-fns** ile tarih işlemleri gerçekleştirilmektedir
 - **Context API** ile global state yönetimi yapılmaktadır
 - **Detaylı hata yönetimi** ile kullanıcı dostu deneyim sağlanmaktadır
+
+---
+
+# 🔑 VARSAYILAN KULLANICI BİLGİLERİ
+
+## Admin Hesabı:
+```
+Email: admin@admin.com
+Password: Admin123!
+```
+
+## Öğrenci Hesabı:
+```
+Email: student@student.com
+Password: Student123!
+```
+
+> **🔒 Güvenlik Notu:** Güvenlik nedeniyle doğrudan admin hesabı oluşturamazsınız. Yeni kullanıcılar varsayılan olarak "Student" rolü ile kaydolur. Admin yetkisi vermek için:
+> 1. Yukarıdaki admin hesabı ile giriş yapın
+> 2. İstediğiniz kullanıcıyı oluşturun veya mevcut bir kullanıcıyı güncelleyin
+> 3. Kullanıcının rolünü "Admin" olarak değiştirin
+
+> **💡 İpucu:** Yeni hesap oluşturduğunuzda otomatik olarak "Student" rolü atanır. Admin yetkisi vermek için mevcut admin hesabı ile giriş yapıp kullanıcı rolünü değiştirin.
+
+---
+
+# 🚀 KURULUM TALİMATLARI
+
+##  Backend Kurulum ve Çalıştırma
+
+
+## 🐳 YÖNTEMİ 1: Docker ile Çalıştırma (ÖNERİLEN)
+
+> **✅ Avantajlar:** Bu yöntemle bilgisayarınızda sadece Docker yeterli! .NET SDK ve PostgreSQL kurmanıza gerek yok.
+
+### 📋 Gereksinimler:
+- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop)
+- **Git** - [İndir](https://git-scm.com/downloads)
+
+### 🔧 Adımlar:
+
+#### 1. Projeyi indirin:
+```bash
+git clone [repo-url]
+cd student-course-management
+```
+
+#### 2. Backend'i başlatın:
+```bash
+cd backend
+docker-compose up -d
+```
+> **💡 Not:** Bu komut hem PostgreSQL hem de .NET API'yi otomatik başlatır!
+
+#### 3. Frontend'i başlatın:
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
+#### 4. Kontrol edin:
+- **Backend API:** http://localhost:5000
+- **Swagger:** http://localhost:5000/swagger
+- **Frontend:** http://localhost:5173
+
+#### 5. Yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapın!
+
+---
+
+## 💻 YÖNTEMİ 2: Docker'sız Çalıştırma (Alternatif)
+
+> **⚠️ Dikkat:** Bu yöntem daha karmaşıktır. Sadece Docker kullanamıyorsanız tercih edin.
+
+### 📋 Gereksinimler:
+- **.NET 8 SDK** (8.0.400 veya üzeri) - [İndir](https://dotnet.microsoft.com/download)
+- **PostgreSQL** - [İndir](https://www.postgresql.org/download/)
+- **Node.js** (v18 veya üzeri) - [İndir](https://nodejs.org/)
+- **Git** - [İndir](https://git-scm.com/downloads)
+
+### 🔧 Adımlar:
+
+#### 1. PostgreSQL'i kurun:
+- Port: **5435** (varsayılan 5432 değil!)
+- Şifre: **postgres**
+- Veritabanı adı: **studentmanagementdb**
+
+#### 2. Projeyi indirin:
+```bash
+git clone [repo-url]
+cd student-course-management
+```
+
+#### 3. Backend'i başlatın:
+```bash
+cd backend
+dotnet run
+```
+
+#### 4. Frontend'i başlatın (yeni terminal):
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### 5. Kontrol edin:
+- **Backend API:** http://localhost:5000
+- **Frontend:** http://localhost:5173
+
+#### 6. Yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapın!
+
+---
+
+## 🗃️ Veritabanı Yönetimi (DBeaver) - İSTEĞE BAĞLI
+
+> **💡 Not:** Veritabanını görsel olarak yönetmek istiyorsanız DBeaver kurabilirsiniz.
+
+### DBeaver Kurulumu ve Bağlantısı:
+
+#### 1. DBeaver'ı indirin ve kurun:
+- [DBeaver İndir](https://dbeaver.io/download/)
+
+#### 2. Bağlantı kurun:
+1. **DBeaver'ı açın**
+2. **"New Database Connection" butonuna tıklayın** (+ ikonu)
+3. **PostgreSQL'i seçin** ve "Next"
+4. **Bağlantı bilgilerini girin:**
+   - **Host:** localhost
+   - **Port:** 5435
+   - **Database:** studentmanagementdb
+   - **Username:** postgres
+   - **Password:** postgres
+5. **"Test Connection" ile test edin**
+6. **"Finish" ile kaydedin**
+
+---
+
+## 🆘 Sorun mu Yaşıyorsunuz?
+
+### Docker Sorunları:
+```bash
+# Container'ları kontrol et
+docker-compose ps
+
+# Yeniden başlat
+docker-compose restart
+
+# Tamamen sil ve yeniden başlat
+docker-compose down -v
+docker-compose up -d
+```
+
+### Genel Sorunlar:
+- **Port 5000 kullanımda:** Diğer uygulamaları kapatın
+- **Port 5173 kullanımda:** `npm run dev -- --port 3000` deneyin
+- **PostgreSQL bağlanamıyor:** Port ve şifre ayarlarını kontrol edin
+
+---
+
+**🎯 Başarıyla kurulum yaptıysanız yukarıdaki varsayılan kullanıcı bilgileri ile giriş yapabilirsiniz!**
