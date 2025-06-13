@@ -31,6 +31,9 @@ artifacts/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
+TempModels/
+**/TempModels/
+TempDbContext.cs
 
 # Database
 *.db
