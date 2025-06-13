@@ -104,10 +104,13 @@ Bu proje, öğrenci ve ders yönetimini kapsayan kapsamlı bir web uygulamasın�
 ## 🚀 Kurulum ve Çalıştırma
 
 ### 📋 Ön Gereksinimler
-- **.NET 8 SDK** - [İndir](https://dotnet.microsoft.com/download)
-- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop/)
+- **Docker Desktop** - [İndir](https://www.docker.com/products/docker-desktop/) *(Önerilen yöntem)*
 - **Git** - [İndir](https://git-scm.com/downloads)
 - **DBeaver** (Veritabanı yönetimi için) - [İndir](https://dbeaver.io/download/)
+
+> **💡 .NET SDK Kurulumu:** Docker Compose yöntemi kullanıyorsanız .NET SDK kurmanıza gerek yoktur. Docker container'ı içinde gerekli .NET 8 sürümü hazır olarak gelir.
+> 
+> **📋 Docker'sız kurulum için:** **.NET 8 SDK** (8.0.400 veya üzeri) - [İndir](https://dotnet.microsoft.com/download)
 
 ### 🔧 Kurulum Adımları
 
@@ -124,6 +127,8 @@ docker-compose --version
 ```
 
 ### 🐳 Docker ile Çalıştırma (ÖNERİLEN)
+
+> **✅ Avantajlar:** Bu yöntemle bilgisayarınızda .NET SDK kurulu olmasına gerek yok. Sadece Docker yeterli!
 
 #### 3. Uygulamayı Docker ile başlatın:
 ```bash
